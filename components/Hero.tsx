@@ -48,9 +48,8 @@ export default function Hero({ profile }: HeroProps) {
 
       const timeline = gsap
         .timeline({ defaults: { duration: 0.9, ease: SMOOTH_EASE } })
-        .fromTo('[data-hero="portrait"]', from, to)
-        .addLabel("metrics", overlap)
-        .fromTo('[data-hero="metric"]', from, staggered, "metrics")
+        .addLabel("metrics")
+        .fromTo('[data-hero="metric"]', from, staggered)
         .fromTo('[data-hero="cta"]', from, staggered, overlap);
 
       if (!prefersReducedMotion()) {
@@ -131,7 +130,8 @@ export default function Hero({ profile }: HeroProps) {
             </div>
           </div>
 
-          <div data-hero="portrait" className="gsap-reveal">
+          {/* Glides without fading, because the portrait can be the largest paint too. */}
+          <div className="hero-glide">
             <div className="mx-auto w-full max-w-xs rounded-3xl bg-linear-to-br from-accent-400/70 via-white/10 to-accent-600/50 p-0.5">
               <div className="relative flex aspect-4/5 items-center justify-center overflow-hidden rounded-[calc(1.5rem-2px)] bg-navy-900">
                 {profileImage ? (

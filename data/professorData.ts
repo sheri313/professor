@@ -240,6 +240,7 @@ export const footerLinks: NavLink[] = [
 export const professorProfile: ProfessorProfile = {
   name: "Dr. Eleanor A. Mitchell",
   citationName: "Eleanor A. Mitchell",
+  profileImage: "/images/eleanor-mitchell.jpg",
   title: "Lecturer & Researcher in Health Informatics & Systems",
   headlineLead: "Advancing the science of",
   headlineHighlight: "Software Engineering & AI",
