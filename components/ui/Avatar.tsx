@@ -7,7 +7,7 @@ interface AvatarProps {
   className?: string;
 }
 
-function getInitials(name: string): string {
+export function getInitials(name: string): string {
   const parts = name.replace(/^Dr\.\s*/, "").split(/\s+/);
   const first = parts[0] ?? "";
   const last = parts.length > 1 ? parts[parts.length - 1] : "";

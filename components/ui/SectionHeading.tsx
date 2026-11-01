@@ -16,14 +16,14 @@ export default function SectionHeading({
   return (
     <header className="max-w-2xl">
       <p
-        className={`text-sm font-semibold uppercase tracking-widest ${
+        className={`font-mono text-sm font-medium uppercase tracking-widest ${
           dark ? "text-accent-400" : "text-accent-700"
         }`}
       >
         {eyebrow}
       </p>
       <h2
-        className={`mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl ${
+        className={`mt-2 font-display text-4xl font-extrabold tracking-tight sm:text-5xl ${
           dark ? "text-white" : "text-navy-900"
         }`}
       >

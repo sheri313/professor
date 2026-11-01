@@ -10,6 +10,24 @@ interface NetworkGraph {
   edges: Float32Array;
 }
 
+interface SectionScene {
+  opacity: string;
+  spin: number;
+  color: number;
+}
+
+// Each section sets its own mood. The canvas sits over section backgrounds, so it
+// fades right down behind the text-heavy ones and comes up where it can be the show.
+const sectionScenes: Record<string, SectionScene> = {
+  top: { opacity: "0.35", spin: 0.03, color: 0x34d399 },
+  about: { opacity: "0.2", spin: 0.012, color: 0x10b981 },
+  research: { opacity: "0.38", spin: 0.09, color: 0x6ee7b7 },
+  publications: { opacity: "0.08", spin: 0.008, color: 0x38bdf8 },
+  team: { opacity: "0.1", spin: 0.02, color: 0x10b981 },
+  teaching: { opacity: "0.22", spin: 0.05, color: 0x2dd4bf },
+  contact: { opacity: "0.06", spin: 0.01, color: 0x10b981 },
+};
+
 const CANVAS_OPACITY = "0.35";
 const START_EVENTS = ["pointermove", "pointerdown", "scroll", "keydown", "touchstart"];
 const FRAME_INTERVAL_MS = 1000 / 30;
@@ -139,10 +157,36 @@ function startNetwork(THREE: ThreeModule, container: HTMLDivElement): () => void
   network.add(new THREE.LineSegments(edgeGeometry, edgeMaterial));
   scene.add(network);
 
+  const animated = !prefersReducedMotion();
   const pointer = { x: 0, y: 0 };
+  const targetColor = new THREE.Color(0x34d399);
   let frameId = 0;
   let lastFrameTime = 0;
   let idleRotation = 0;
+  let spin = IDLE_ROTATION_SPEED;
+  let targetSpin = IDLE_ROTATION_SPEED;
+
+  const applyScene = ({ opacity, spin: nextSpin, color }: SectionScene) => {
+    container.style.opacity = opacity;
+    targetSpin = nextSpin;
+    targetColor.set(color);
+
+    // Without the animation loop nothing would ever ease toward the new color.
+    if (!animated) {
+      nodeMaterial.color.copy(targetColor);
+      edgeMaterial.color.copy(targetColor);
+      renderer.render(scene, camera);
+    }
+  };
+
+  // The same thin band as the navbar, so the scene changes with the active section.
+  const sceneObserver = new IntersectionObserver(
+    (entries) => {
+      const entered = entries.find(({ isIntersecting }) => isIntersecting);
+      if (entered) applyScene(sectionScenes[entered.target.id]);
+    },
+    { rootMargin: "-45% 0px -50% 0px" },
+  );
 
   const handleMouseMove = (event: MouseEvent) => {
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -172,18 +216,20 @@ function startNetwork(THREE: ThreeModule, container: HTMLDivElement): () => void
 
     const delta = Math.min((time - lastFrameTime) / 1000, 0.1);
     lastFrameTime = time;
-    idleRotation += delta * IDLE_ROTATION_SPEED;
+    idleRotation += delta * spin;
 
     const smoothing = 1 - Math.exp(-delta * POINTER_RESPONSE);
     const targetX = pointer.y * MAX_POINTER_TILT;
     const targetY = idleRotation + pointer.x * MAX_POINTER_TILT;
     network.rotation.x += (targetX - network.rotation.x) * smoothing;
     network.rotation.y += (targetY - network.rotation.y) * smoothing;
+    spin += (targetSpin - spin) * smoothing;
+    nodeMaterial.color.lerp(targetColor, smoothing);
+    edgeMaterial.color.lerp(targetColor, smoothing);
 
     renderer.render(scene, camera);
   };
 
-  const animated = !prefersReducedMotion();
   window.addEventListener("resize", handleResize);
   renderer.render(scene, camera);
 
@@ -194,8 +240,14 @@ function startNetwork(THREE: ThreeModule, container: HTMLDivElement): () => void
 
   container.style.opacity = CANVAS_OPACITY;
 
+  Object.keys(sectionScenes).forEach((id) => {
+    const section = document.getElementById(id);
+    if (section) sceneObserver.observe(section);
+  });
+
   return () => {
     cancelAnimationFrame(frameId);
+    sceneObserver.disconnect();
     window.removeEventListener("resize", handleResize);
     window.removeEventListener("mousemove", handleMouseMove);
 

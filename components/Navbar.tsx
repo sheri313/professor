@@ -47,7 +47,7 @@ export default function Navbar({ name, lab, links }: NavbarProps) {
   return (
     <header
       className={`nav-drop fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
-        solid ? "border-navy-200/70 bg-white/80 shadow-sm" : "border-white/10 bg-navy-950/40"
+        solid ? "border-navy-200/70 bg-white/95 shadow-sm" : "border-white/10 bg-navy-950/40"
       }`}
     >
       <nav aria-label="Primary" className="page-container flex h-16 items-center justify-between">

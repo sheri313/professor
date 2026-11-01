@@ -59,8 +59,12 @@ function disableRevealFailsafe() {
   document.documentElement.classList.add("gsap-ready");
 }
 
+// Shared because toLocaleString builds a new formatter on every call, which made
+// the count-up the most expensive function on the page.
+const countFormatter = new Intl.NumberFormat("en-US");
+
 export function formatCount(count: number, suffix = ""): string {
-  return `${Math.round(count).toLocaleString("en-US")}${suffix}`;
+  return `${countFormatter.format(Math.round(count))}${suffix}`;
 }
 
 // Opacity rather than autoAlpha: visibility: hidden would remove content from

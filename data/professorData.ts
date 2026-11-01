@@ -38,7 +38,7 @@ export interface SocialLink {
   platform: string;
   url: string;
   icon: LucideIcon;
-  featured?: boolean; // shown as a badge in the About quick facts
+  featured?: boolean; // shown as a badge in the About connect card
 }
 
 // ─── Professor bio / hero ────────────────────────────────────

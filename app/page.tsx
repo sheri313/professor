@@ -58,6 +58,8 @@ export default function Home() {
           members={teamMembers}
           recruitment={recruitment}
           contactEmail={professorProfile.email}
+          leadName={name}
+          leadImage={profileImage}
         />
         <Teaching courses={courses} />
         <Contact profile={professorProfile} />

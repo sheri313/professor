@@ -2,10 +2,14 @@
 
 import { CircleAlert, CircleCheck, MailCheck, Send } from "lucide-react";
 import { useState } from "react";
-import type { SubmitEvent } from "react";
+import type { ReactNode, SubmitEvent } from "react";
 
 interface ContactFormProps {
+  children: ReactNode;
   recipient: string;
+  recipientName: string;
+  postmarkTop: string;
+  postmarkBottom: string;
 }
 
 type FieldName = "name" | "email" | "subject" | "message";
@@ -26,15 +30,21 @@ interface FormFieldProps {
   onBlur: (name: FieldName) => void;
 }
 
+interface PostmarkProps {
+  top: string;
+  bottom: string;
+}
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Long mailto: links get cut off by some browsers and email apps.
 const MESSAGE_MAX_LENGTH = 1500;
 
-const fieldNames: FieldName[] = ["name", "email", "subject", "message"];
+// In reading order, so an invalid submit focuses the first problem on the page.
+const fieldNames: FieldName[] = ["subject", "message", "name", "email"];
 
 const validators: Record<FieldName, (value: string) => string | null> = {
   name: (value) => (value.trim().length >= 2 ? null : "Please enter your name."),
-  email: (value) => (EMAIL_PATTERN.test(value.trim()) ? null : "Please enter a valid email address."),
+  email: (value) => (EMAIL_PATTERN.test(value.trim()) ? null : "Please enter a valid email."),
   subject: (value) => (value.trim().length >= 3 ? null : "Please add a short subject."),
   message: (value) => {
     if (value.trim().length < 10) return "Please write at least 10 characters.";
@@ -66,9 +76,6 @@ function FormField({
   const showError = touched && error !== null;
   const showValid = touched && error === null;
   const messageId = `contact-${name}-message`;
-  const className = `w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-navy-900 transition-colors ${
-    showError ? "border-rose-500" : showValid ? "border-accent-600" : "border-navy-200"
-  }`;
   const fieldProps = {
     id: `contact-${name}`,
     name,
@@ -76,16 +83,21 @@ function FormField({
     required: true,
     "aria-invalid": showError,
     "aria-describedby": messageId,
-    className,
+    className: `peer block w-full resize-none bg-transparent font-serif text-xl text-navy-900 outline-none! ${
+      multiline ? "letter-lines" : "border-b border-navy-300 py-1"
+    }`,
     onBlur: () => onBlur(name),
   };
 
   return (
     <div>
-      <label htmlFor={fieldProps.id} className="text-sm font-semibold text-navy-800">
+      <label
+        htmlFor={fieldProps.id}
+        className="font-mono text-[0.6875rem] uppercase tracking-widest text-navy-500"
+      >
         {label}
       </label>
-      <div className="relative mt-1.5">
+      <div className="relative">
         {multiline ? (
           <textarea
             {...fieldProps}
@@ -100,6 +112,13 @@ function FormField({
             onChange={(event) => onChange(name, event.target.value)}
           />
         )}
+        {/* Draws in on transform, so focusing a field never repaints the card. */}
+        <span
+          aria-hidden="true"
+          className={`absolute inset-x-0 bottom-0 h-0.5 origin-left transition-transform duration-300 ease-out peer-focus:scale-x-100 ${
+            showError ? "scale-x-100 bg-rose-500" : "scale-x-0 bg-accent-600"
+          }`}
+        />
       </div>
       {/* The reserved line stops the form from jumping when a message appears. */}
       <p id={messageId} className="mt-1 flex min-h-5 items-center justify-between gap-3 text-xs">
@@ -122,10 +141,58 @@ function FormField({
   );
 }
 
-export default function ContactForm({ recipient }: ContactFormProps) {
+function Postmark({ top, bottom }: PostmarkProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 200 200"
+      className="postmark pointer-events-none absolute right-24 top-20 size-36 text-accent-800 sm:right-32 sm:top-24"
+    >
+      <defs>
+        <path id="postmark-top" d="M30 100a70 70 0 0 1 140 0" />
+        <path id="postmark-bottom" d="M20 100a80 80 0 0 0 160 0" />
+      </defs>
+      <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" strokeWidth="3" />
+      <circle cx="100" cy="100" r="58" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <g fill="currentColor" className="font-mono text-[10.5px] font-medium uppercase tracking-[0.12em]">
+        <text>
+          <textPath href="#postmark-top" startOffset="50%" textAnchor="middle">
+            {top}
+          </textPath>
+        </text>
+        <text>
+          <textPath href="#postmark-bottom" startOffset="50%" textAnchor="middle">
+            {bottom}
+          </textPath>
+        </text>
+      </g>
+      <text
+        x="100"
+        y="108"
+        fill="currentColor"
+        textAnchor="middle"
+        className="font-mono text-[22px] font-bold tracking-widest"
+      >
+        SENT
+      </text>
+    </svg>
+  );
+}
+
+export default function ContactForm({
+  children,
+  recipient,
+  recipientName,
+  postmarkTop,
+  postmarkBottom,
+}: ContactFormProps) {
   const [values, setValues] = useState<FormValues>({ name: "", email: "", subject: "", message: "" });
   const [touched, setTouched] = useState<TouchedFields>({});
   const [draftUrl, setDraftUrl] = useState<string | null>(null);
+
+  const readyFields = fieldNames.filter((name) => validators[name](values[name]) === null).length;
+  const allReady = readyFields === fieldNames.length;
+  const SubmitIcon = draftUrl ? MailCheck : Send;
 
   const handleChange = (name: FieldName, value: string) => {
     setValues((current) => ({ ...current, [name]: value }));
@@ -167,47 +234,82 @@ export default function ContactForm({ recipient }: ContactFormProps) {
       noValidate
       onSubmit={handleSubmit}
       aria-label="Contact form"
-      className="rounded-2xl bg-white p-5 shadow-xl sm:p-8"
+      data-sent={draftUrl ? "" : undefined}
+      className="airmail-edge rounded-2xl p-2.5 shadow-[0_48px_90px_-40px_rgb(12_20_35/0.55)]"
     >
-      <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
-        <FormField {...fieldProps("name")} label="Name" autoComplete="name" />
-        <FormField {...fieldProps("email")} label="Email" type="email" autoComplete="email" />
-      </div>
-      <div className="mt-1 space-y-1">
-        <FormField {...fieldProps("subject")} label="Subject" />
-        <FormField
-          {...fieldProps("message")}
-          label="Message"
-          multiline
-          hint={`${values.message.length}/${MESSAGE_MAX_LENGTH}`}
-        />
-      </div>
+      <div className="grid rounded-lg bg-paper-50 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
+        <div className="p-6 sm:p-9">
+          <p className="font-serif text-3xl text-navy-900">Dear {recipientName},</p>
 
-      <button
-        type="submit"
-        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-800 sm:w-auto"
-      >
-        <Send aria-hidden="true" className="size-4" />
-        Send Message
-      </button>
+          <div className="mt-5 space-y-1">
+            <FormField {...fieldProps("subject")} label="Regarding" />
+            <FormField
+              {...fieldProps("message")}
+              label="Your message"
+              multiline
+              hint={`${values.message.length}/${MESSAGE_MAX_LENGTH}`}
+            />
+          </div>
 
-      <div role="status" className="mt-4 empty:hidden">
-        {draftUrl && (
-          <p className="flex gap-2 rounded-lg bg-accent-50 p-3 text-sm text-accent-900">
-            <MailCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-            <span>
-              Your email app should now open with this message ready to send. If it doesn&apos;t,{" "}
-              <a href={draftUrl} className="font-semibold underline">
-                open the draft again
-              </a>{" "}
-              or write to{" "}
-              <a href={`mailto:${recipient}`} className="font-semibold underline">
-                {recipient}
-              </a>
-              .
+          <p className="mt-2 font-serif text-xl italic text-navy-700">Yours sincerely,</p>
+          <div className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+            <FormField {...fieldProps("name")} label="Your name" autoComplete="name" />
+            <FormField
+              {...fieldProps("email")}
+              label="Your email"
+              type="email"
+              autoComplete="email"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="group relative mt-2 flex w-full items-center justify-between overflow-hidden rounded-lg bg-navy-900 px-5 py-3.5 text-sm font-semibold text-white"
+          >
+            {/* Fills as fields become valid, so the button reports how close the letter is. */}
+            <span
+              aria-hidden="true"
+              style={{ transform: `scaleX(${readyFields / fieldNames.length})` }}
+              className="absolute inset-0 origin-left bg-accent-700 transition-transform duration-500 ease-out"
+            />
+            <span className="relative inline-flex items-center gap-2">
+              <SubmitIcon
+                aria-hidden="true"
+                className={`size-4 transition-transform duration-300 ${
+                  allReady && !draftUrl ? "group-hover:-rotate-12 group-hover:translate-x-1" : ""
+                }`}
+              />
+              {draftUrl ? "Draft opened" : "Send Message"}
             </span>
-          </p>
-        )}
+            <span aria-hidden="true" className="relative font-mono text-xs opacity-80">
+              {readyFields}/{fieldNames.length}
+            </span>
+          </button>
+
+          <div role="status" className="mt-4 empty:hidden">
+            {draftUrl && (
+              <p className="flex gap-2 rounded-lg bg-accent-50 p-3 text-sm text-accent-900">
+                <MailCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                <span>
+                  Your email app should now open with this message ready to send. If it doesn&apos;t,{" "}
+                  <a href={draftUrl} className="font-semibold underline">
+                    open the draft again
+                  </a>{" "}
+                  or write to{" "}
+                  <a href={`mailto:${recipient}`} className="font-semibold underline">
+                    {recipient}
+                  </a>
+                  .
+                </span>
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="relative border-t border-navy-200 p-6 sm:p-9 lg:border-l lg:border-t-0">
+          {children}
+          <Postmark top={postmarkTop} bottom={postmarkBottom} />
+        </div>
       </div>
     </form>
   );
