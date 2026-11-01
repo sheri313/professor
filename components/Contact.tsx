@@ -1,4 +1,5 @@
-import { Clock, Mail, MapPin, Phone, type LucideIcon } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import ContactForm from "@/components/ui/ContactForm";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import type { ProfessorProfile } from "@/data/professorData";
@@ -7,66 +8,78 @@ interface ContactProps {
   profile: ProfessorProfile;
 }
 
-interface ContactDetail {
-  label: string;
-  value: string;
-  icon: LucideIcon;
-  href?: string;
-}
+const cardClassName = "rounded-2xl border border-white/10 bg-white/5 p-6";
+const cardTitleClassName = "flex items-center gap-2 font-display font-bold text-white";
+const linkClassName =
+  "inline-flex items-center gap-2 wrap-anywhere font-medium text-white transition-colors hover:text-accent-300";
 
 export default function Contact({ profile }: ContactProps) {
-  const { email, phone, officeLocation, officeHours, university } = profile;
-
-  const details: ContactDetail[] = [
-    { label: "Email", value: email, icon: Mail, href: `mailto:${email}` },
-    { label: "Phone", value: phone, icon: Phone, href: `tel:${phone.replace(/[^+\d]/g, "")}` },
-    { label: "Office", value: `${officeLocation}, ${university}`, icon: MapPin },
-    { label: "Office hours", value: officeHours, icon: Clock },
-  ];
+  const { email, phone, department, university, contactNote } = profile;
+  const { officeLocation, officeAddress, officeHours } = profile;
 
   return (
     <section id="contact" className="bg-navy-900 py-20 lg:py-24">
-      <div className="page-container grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div className="page-container">
         <Reveal>
-          <SectionHeading
-            eyebrow="Contact"
-            title="Get in touch"
-            description={profile.contactNote}
-            tone="dark"
-          />
-          <a
-            href={`mailto:${email}`}
-            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-accent-500 px-5 py-3 text-sm font-semibold text-navy-950 transition-colors hover:bg-accent-400"
-          >
-            <Mail aria-hidden="true" className="size-4" />
-            Send an email
-          </a>
+          <SectionHeading eyebrow="Contact" title="Get in touch" description={contactNote} tone="dark" />
         </Reveal>
 
-        <Reveal delay={0.1}>
-          <dl className="grid gap-4 sm:grid-cols-2">
-            {details.map(({ label, value, icon: Icon, href }) => (
-              <div
-                key={label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:first:col-span-2 sm:last:col-span-2"
-              >
-                <dt className="flex items-center gap-2 text-sm font-medium text-navy-300">
-                  <Icon aria-hidden="true" className="size-4 text-accent-400" />
-                  {label}
-                </dt>
-                <dd className="mt-2 wrap-break-word font-semibold text-white">
-                  {href ? (
-                    <a href={href} className="hover:text-accent-300">
-                      {value}
-                    </a>
-                  ) : (
-                    value
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Reveal>
+        <div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-8">
+          <Reveal className="space-y-6">
+            <div className={cardClassName}>
+              <h3 className={cardTitleClassName}>
+                <MapPin aria-hidden="true" className="size-5 text-accent-400" />
+                Office location
+              </h3>
+              <address className="mt-3 text-sm not-italic leading-6 text-navy-200">
+                <span className="block font-semibold text-white">{officeLocation}</span>
+                <span className="block">{department}</span>
+                <span className="block">{university}</span>
+                {officeAddress.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </address>
+              <ul className="mt-4 space-y-2 border-t border-white/10 pt-4 text-sm">
+                <li>
+                  <a href={`mailto:${email}`} className={linkClassName}>
+                    <Mail aria-hidden="true" className="size-4 shrink-0 text-accent-400" />
+                    {email}
+                  </a>
+                </li>
+                <li>
+                  <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} className={linkClassName}>
+                    <Phone aria-hidden="true" className="size-4 shrink-0 text-accent-400" />
+                    {phone}
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className={cardClassName}>
+              <h3 className={cardTitleClassName}>
+                <Clock aria-hidden="true" className="size-5 text-accent-400" />
+                Office hours
+              </h3>
+              <dl className="mt-3 divide-y divide-white/10 text-sm">
+                {officeHours.map(({ day, time, format }) => (
+                  <div key={day} className="flex flex-wrap justify-between gap-x-4 gap-y-0.5 py-3">
+                    <dt className="font-semibold text-white">{day}</dt>
+                    <dd className="text-navy-200 sm:text-right">
+                      {time}
+                      <span className="block text-xs text-navy-300">{format}</span>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <ContactForm recipient={email} />
+          </Reveal>
+        </div>
       </div>
     </section>
   );

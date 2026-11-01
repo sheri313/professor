@@ -3,11 +3,13 @@
 //
 // Everything below is fictional placeholder content. Mock DOIs use
 // Crossref's reserved test prefix (10.5555) and mock arXiv IDs are
-// out of range, so neither links to a real paper.
+// out of range, so neither links to a real paper. Mock patent numbers
+// are also out of range and do not match any issued patent.
 //
-// Optional asset fields (profileImage, cv, photo, pdfUrl, syllabus)
-// render their image or link only once they are set. Drop the files
-// in public/ and point these fields at them.
+// Optional asset fields (profileImage, cv, photo, pdfUrl) render their
+// image or link only once they are set. Drop the files in public/ and
+// point these fields at them. Course downloads in public/courses are
+// placeholder PDFs, so replace them with the real documents.
 // ============================================================
 import {
   AtSign,
@@ -57,8 +59,9 @@ export interface ProfessorProfile {
   labRole: string;
   email: string;
   phone: string;
-  officeHours: string;
+  officeHours: OfficeHourSlot[];
   officeLocation: string;
+  officeAddress: string[];
   bio: string; // paragraphs separated by a blank line
   shortBio: string;
   contactNote: string;
@@ -69,6 +72,12 @@ export interface ProfessorProfile {
   cv?: string;
   socials: SocialLink[];
   stats: Stat[];
+}
+
+export interface OfficeHourSlot {
+  day: string;
+  time: string;
+  format: string;
 }
 
 export interface Stat {
@@ -102,7 +111,7 @@ export interface Recruitment {
   eyebrow: string;
   title: string;
   description: string;
-  positions: string[];
+  audiences: string[];
 }
 
 // ─── Research interests ──────────────────────────────────────
@@ -115,12 +124,7 @@ export interface ResearchInterest {
 }
 
 // ─── Publications ────────────────────────────────────────────
-export type PublicationType =
-  | "journal"
-  | "conference"
-  | "workshop"
-  | "book-chapter"
-  | "preprint";
+export type PublicationType = "journal" | "conference" | "patent";
 
 export interface Publication {
   id: string;
@@ -141,13 +145,7 @@ export interface Publication {
 }
 
 // ─── Team / Lab members ──────────────────────────────────────
-export type MemberRole =
-  | "PhD Student"
-  | "MSc Student"
-  | "Postdoctoral Researcher"
-  | "Research Scientist"
-  | "Undergraduate Researcher"
-  | "Alumni";
+export type MemberRole = "PhD Candidate" | "Master's Student" | "Research Assistant" | "Alumni";
 
 export interface TeamMember {
   id: string;
@@ -170,6 +168,13 @@ export type CourseLevel = "Undergraduate" | "Graduate";
 
 export type Semester = "Fall" | "Spring" | "Summer";
 
+export type CourseStatus = "current" | "past";
+
+export interface CourseMaterial {
+  label: string;
+  href: string;
+}
+
 export interface Course {
   id: string;
   code: string;
@@ -179,7 +184,9 @@ export interface Course {
   description: string;
   semester: Semester;
   year: number;
+  status: CourseStatus;
   syllabus?: string;
+  materials?: CourseMaterial[];
   tags: string[];
 }
 
@@ -231,8 +238,13 @@ export const professorProfile: ProfessorProfile = {
   labRole: "Director, Software Intelligence Lab",
   email: "e.mitchell@westbrook.example",
   phone: "+1 (617) 555-0192",
-  officeHours: "Tuesdays & Thursdays, 2:00 PM – 4:00 PM",
+  officeHours: [
+    { day: "Tuesday", time: "2:00 PM – 4:00 PM", format: "In person" },
+    { day: "Thursday", time: "2:00 PM – 4:00 PM", format: "In person" },
+    { day: "Friday", time: "10:00 AM – 11:00 AM", format: "Online, by appointment" },
+  ],
   officeLocation: "Gates Hall, Room 412",
+  officeAddress: ["100 Westbrook Way", "Cambridge, MA 02139, USA"],
   bio: `Dr. Eleanor A. Mitchell is a Professor of Software Engineering at the Westbrook Institute of Technology, where she directs the Software Intelligence Lab. Her research sits at the intersection of software engineering, human-computer interaction, and artificial intelligence — with a focus on building software systems that are not only functionally correct but measurably trustworthy, explainable, and resilient.
 
 Before joining Westbrook, Dr. Mitchell was a Research Scientist at Google Brain (2013–2016) and a postdoctoral fellow at MIT CSAIL (2012–2013). She received her Ph.D. from Carnegie Mellon University in 2012, advised by Prof. Marcus J. Aldridge.
@@ -312,15 +324,10 @@ Beyond research, Dr. Mitchell is deeply committed to inclusive education in comp
 // ─── Recruitment ─────────────────────────────────────────────
 export const recruitment: Recruitment = {
   eyebrow: "Now recruiting",
-  title: "Openings for CSC & Grad Students",
+  title: "Open Positions",
   description:
-    "The Software Intelligence Lab is looking for curious, motivated students to work on AI code generation, distributed systems, and empirical software engineering. To apply, send a short note with your CV, transcript, and the research direction that excites you most.",
-  positions: [
-    "China Scholarship Council (CSC) funded PhD students",
-    "CSC visiting scholars and joint PhD students",
-    "Fully funded PhD students, starting each fall",
-    "MSc thesis students and Westbrook undergraduates",
-  ],
+    "Recruiting self-motivated students for Fall/Spring intakes. CSC Scholarship applicants are welcome to reach out with CV and transcripts.",
+  audiences: ["Master's Applicants", "PhD Applicants", "CSC Scholarship Applicants"],
 };
 
 // ─── Research Interests ─────────────────────────────────────
@@ -577,6 +584,66 @@ export const publications: Publication[] = [
   publisher = {IEEE}
 }`,
   },
+  {
+    id: "patent-2024-01",
+    title: "Systems and Methods for Auditing Machine-Generated Source Code",
+    authors: ["Eleanor A. Mitchell", "Ravi K. Sharma"],
+    venue: "U.S. Patent 19,000,101 B2",
+    year: 2024,
+    type: "patent",
+    abstract:
+      "A system that checks machine-generated source code against programmer-specified invariants, flagging likely safety and correctness violations before the code is merged.",
+    tags: ["LLM", "Code Generation", "Static Analysis"],
+    featured: false,
+    citations: 6,
+    bibtex: `@misc{mitchell2024auditing,
+  title        = {Systems and Methods for Auditing Machine-Generated Source Code},
+  author       = {Mitchell, Eleanor A. and Sharma, Ravi K.},
+  year         = {2024},
+  howpublished = {U.S. Patent 19,000,101 B2},
+  note         = {Assignee: Westbrook Institute of Technology}
+}`,
+  },
+  {
+    id: "patent-2023-01",
+    title: "Automated Design of Fault-Injection Experiments for Distributed Services",
+    authors: ["Eleanor A. Mitchell", "David Nwosu"],
+    venue: "U.S. Patent 19,000,102 B2",
+    year: 2023,
+    type: "patent",
+    abstract:
+      "A method for generating and prioritising fault-injection experiments from service dependency graphs and historical incident reports.",
+    tags: ["Chaos Engineering", "Microservices", "Reliability"],
+    featured: false,
+    citations: 4,
+    bibtex: `@misc{mitchell2023faultinjection,
+  title        = {Automated Design of Fault-Injection Experiments for Distributed Services},
+  author       = {Mitchell, Eleanor A. and Nwosu, David},
+  year         = {2023},
+  howpublished = {U.S. Patent 19,000,102 B2},
+  note         = {Assignee: Westbrook Institute of Technology}
+}`,
+  },
+  {
+    id: "patent-2021-01",
+    title: "Adaptive Test Selection for Continuous Integration Pipelines",
+    authors: ["Priya Patel", "Eleanor A. Mitchell"],
+    venue: "U.S. Patent 19,000,103 B2",
+    year: 2021,
+    type: "patent",
+    abstract:
+      "A contextual bandit approach that selects which test subsets to run for a code change, reducing pipeline time while preserving fault detection.",
+    tags: ["CI/CD", "Reinforcement Learning", "Test Prioritisation"],
+    featured: false,
+    citations: 9,
+    bibtex: `@misc{patel2021testselection,
+  title        = {Adaptive Test Selection for Continuous Integration Pipelines},
+  author       = {Patel, Priya and Mitchell, Eleanor A.},
+  year         = {2021},
+  howpublished = {U.S. Patent 19,000,103 B2},
+  note         = {Assignee: Westbrook Institute of Technology}
+}`,
+  },
 ];
 
 // ─── Team Members ────────────────────────────────────────────
@@ -584,7 +651,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: "ravi-sharma",
     name: "Ravi K. Sharma",
-    role: "PhD Student",
+    role: "PhD Candidate",
     researchArea: "Trustworthy AI & LLM Code Auditing",
     email: "r.sharma@westbrook.example",
     github: "https://github.com",
@@ -596,7 +663,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: "yuna-takahashi",
     name: "Yuna Takahashi",
-    role: "PhD Student",
+    role: "PhD Candidate",
     researchArea: "Specification Inference & Program Analysis",
     email: "y.takahashi@westbrook.example",
     github: "https://github.com",
@@ -607,7 +674,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: "david-nwosu",
     name: "David Nwosu",
-    role: "PhD Student",
+    role: "PhD Candidate",
     researchArea: "Software Reliability & Chaos Engineering",
     email: "d.nwosu@westbrook.example",
     github: "https://github.com",
@@ -618,7 +685,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: "arjun-bose",
     name: "Arjun Bose",
-    role: "PhD Student",
+    role: "PhD Candidate",
     researchArea: "Human-Centered Developer Tools & Code Review",
     email: "a.bose@westbrook.example",
     github: "https://github.com",
@@ -629,7 +696,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: "sofia-reyes",
     name: "Sofia Reyes",
-    role: "PhD Student",
+    role: "PhD Candidate",
     researchArea: "Fairness & Bias in ML-for-SE",
     email: "s.reyes@westbrook.example",
     linkedin: "https://linkedin.com",
@@ -639,24 +706,47 @@ export const teamMembers: TeamMember[] = [
   {
     id: "priya-patel",
     name: "Priya Patel",
-    role: "Postdoctoral Researcher",
+    role: "Research Assistant",
     researchArea: "CI/CD Automation & Software Testing",
     email: "p.patel@westbrook.example",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
     personalSite: "https://example.com",
     year: 2023,
-    bio: "Priya completed her PhD at ETH Zürich on reinforcement learning for test optimisation. She is now a postdoctoral researcher at the Software Intelligence Lab, leading the NSF-funded project on adaptive CI/CD pipelines.",
+    bio: "Priya holds an MSc from ETH Zürich, where she studied reinforcement learning for test optimisation. She is now a research assistant at the Software Intelligence Lab, supporting the NSF-funded project on adaptive CI/CD pipelines.",
   },
   {
     id: "wei-zhang",
     name: "Wei Zhang",
-    role: "MSc Student",
+    role: "Master's Student",
     researchArea: "Mining Software Repositories",
     email: "w.zhang@westbrook.example",
     github: "https://github.com",
+    linkedin: "https://linkedin.com",
     year: 2023,
     bio: "Wei is an MSc student analysing the evolution of open-source AI frameworks using large-scale repository mining. He holds a B.Eng. from Tsinghua University.",
+  },
+  {
+    id: "mateo-ruiz",
+    name: "Mateo Ruiz",
+    role: "Master's Student",
+    researchArea: "Empirical Studies of AI Pair Programming",
+    email: "m.ruiz@westbrook.example",
+    linkedin: "https://linkedin.com",
+    personalSite: "https://example.com",
+    year: 2024,
+    bio: "Mateo studies how professional developers review and adapt suggestions from AI pair-programming tools.",
+  },
+  {
+    id: "amara-okafor",
+    name: "Amara Okafor",
+    role: "Research Assistant",
+    researchArea: "Cloud Observability & Incident Analysis",
+    email: "a.okafor@westbrook.example",
+    linkedin: "https://linkedin.com",
+    personalSite: "https://example.com",
+    year: 2024,
+    bio: "Amara builds tooling for analysing incident reports and telemetry from large cloud platforms.",
   },
   {
     id: "lena-holm",
@@ -683,7 +773,10 @@ export const courses: Course[] = [
     description:
       "A rigorous introduction to the principles and practices of modern software engineering. Topics include requirements engineering, agile methodologies, design patterns, testing, version control, CI/CD, and software project management. Students complete a semester-long team project shipping a full-stack web application.",
     semester: "Fall",
-    year: 2024,
+    year: 2026,
+    status: "current",
+    syllabus: "/courses/cs301-syllabus.pdf",
+    materials: [{ label: "Lecture Slides", href: "/courses/cs301-lecture-slides.pdf" }],
     tags: ["Agile", "Design Patterns", "Testing", "CI/CD"],
   },
   {
@@ -695,7 +788,10 @@ export const courses: Course[] = [
     description:
       "Comprehensive coverage of software testing theory and practice: unit, integration, system, regression, fuzzing, property-based testing, and mutation testing. Emphasises tool-supported workflows and test automation infrastructure. Guest lectures from industry practitioners.",
     semester: "Spring",
-    year: 2025,
+    year: 2026,
+    status: "past",
+    syllabus: "/courses/cs480-syllabus.pdf",
+    materials: [{ label: "Lecture Notes", href: "/courses/cs480-lecture-notes.pdf" }],
     tags: ["Unit Testing", "Fuzzing", "Mutation Testing", "Test Automation"],
   },
   {
@@ -705,9 +801,12 @@ export const courses: Course[] = [
     level: "Graduate",
     credits: 3,
     description:
-      "A reading-and-discussion seminar covering landmark and state-of-the-art papers in software engineering research. Topics rotate annually; 2024–25 focus: AI-assisted software development, with sub-topics on code generation, program repair, and developer productivity measurement.",
+      "A reading-and-discussion seminar covering landmark and state-of-the-art papers in software engineering research. Topics rotate annually; 2026–27 focus: AI-assisted software development, with sub-topics on code generation, program repair, and developer productivity measurement.",
     semester: "Fall",
-    year: 2024,
+    year: 2026,
+    status: "current",
+    syllabus: "/courses/cs601-syllabus.pdf",
+    materials: [{ label: "Reading List", href: "/courses/cs601-reading-list.pdf" }],
     tags: ["Research Seminar", "AI for SE", "Paper Reading", "Graduate"],
   },
   {
@@ -719,7 +818,10 @@ export const courses: Course[] = [
     description:
       "Graduate-level treatment of reliability theory applied to software systems: reliability growth models, fault-tolerance architectures, chaos engineering, SLO/SLA design, on-call practices, and post-mortem analysis. Case studies drawn from Google, Netflix, and Amazon SRE books.",
     semester: "Spring",
-    year: 2025,
+    year: 2026,
+    status: "past",
+    syllabus: "/courses/cs680-syllabus.pdf",
+    materials: [{ label: "Lecture Slides", href: "/courses/cs680-lecture-slides.pdf" }],
     tags: ["SRE", "Chaos Engineering", "Fault Tolerance", "Distributed Systems"],
   },
   {
@@ -731,7 +833,10 @@ export const courses: Course[] = [
     description:
       "An interdisciplinary graduate course examining how software developers interact with their tools, teammates, and code. Topics: programmer cognition, IDE design, code comprehension, collaborative development, and inclusive design of developer tools. Students conduct an original empirical study.",
     semester: "Spring",
-    year: 2024,
+    year: 2025,
+    status: "past",
+    syllabus: "/courses/cs690-syllabus.pdf",
+    materials: [{ label: "Study Guide", href: "/courses/cs690-study-guide.pdf" }],
     tags: ["HCI", "IDE Design", "Empirical Study", "Developer Experience"],
   },
 ];

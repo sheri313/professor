@@ -17,6 +17,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: `${professorProfile.name} | ${professorProfile.labName}`,
   description: professorProfile.shortBio,
+  openGraph: {
+    title: `${professorProfile.name} | ${professorProfile.labName}`,
+    description: professorProfile.shortBio,
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

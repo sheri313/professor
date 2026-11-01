@@ -4,7 +4,6 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Publications from "@/components/Publications";
-import RecruitmentBanner from "@/components/RecruitmentBanner";
 import ResearchInterests from "@/components/ResearchInterests";
 import Teaching from "@/components/Teaching";
 import Team from "@/components/Team";
@@ -37,9 +36,12 @@ export default function Home() {
           publications={publications}
           highlightAuthor={professorProfile.citationName}
         />
-        <Team members={teamMembers} />
+        <Team
+          members={teamMembers}
+          recruitment={recruitment}
+          contactEmail={professorProfile.email}
+        />
         <Teaching courses={courses} />
-        <RecruitmentBanner recruitment={recruitment} email={professorProfile.email} />
         <Contact profile={professorProfile} />
       </main>
       <Footer profile={professorProfile} links={footerLinks} />
