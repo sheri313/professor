@@ -50,16 +50,16 @@ export default function Home() {
         />
         <About profile={professorProfile} />
         <ResearchInterests interests={researchInterests} />
-        <Publications
-          publications={publications}
-          highlightAuthor={professorProfile.citationName}
-        />
         <Team
           members={teamMembers}
           recruitment={recruitment}
           contactEmail={professorProfile.email}
           leadName={name}
           leadImage={profileImage}
+        />
+        <Publications
+          publications={publications}
+          highlightAuthor={professorProfile.citationName}
         />
         <Teaching courses={courses} />
         <Contact profile={professorProfile} />

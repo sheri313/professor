@@ -223,16 +223,16 @@ export interface NewsItem {
 export const navLinks: NavLink[] = [
   { label: "About", href: "#about" },
   { label: "Research", href: "#research" },
-  { label: "Publications", href: "#publications" },
   { label: "Team", href: "#team" },
+  { label: "Publications", href: "#publications" },
   { label: "Contact", href: "#contact" },
 ];
 
 export const footerLinks: NavLink[] = [
   { label: "About", href: "#about" },
   { label: "Research", href: "#research" },
-  { label: "Publications", href: "#publications" },
   { label: "Team", href: "#team" },
+  { label: "Publications", href: "#publications" },
   { label: "Teaching", href: "#teaching" },
   { label: "Contact", href: "#contact" },
 ];

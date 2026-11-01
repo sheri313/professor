@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, ReactNode, Ref } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +13,11 @@ interface HorizontalTrackProps {
   ghostText: string;
   // One link leaves each stop except the last, so this is also the number of cards.
   links: number;
+  // Changes whenever the cards do, which rebuilds the stage around the new set.
+  cardsKey?: string;
+  // Stays in the frame while the track moves past, or under the track on a carousel.
+  toolbar?: ReactNode;
+  frameRef?: Ref<HTMLDivElement>;
 }
 
 interface Port {
@@ -20,7 +25,7 @@ interface Port {
   y: number;
 }
 
-// Matches the media query that gives .research-stage its scrolling height.
+// Matches the media query that gives .track-stage its scrolling height.
 const STAGE_QUERY = "(min-width: 1024px) and (prefers-reduced-motion: no-preference)";
 
 function getBoxWithin(element: HTMLElement, ancestor: HTMLElement) {
@@ -45,13 +50,22 @@ function getLinkPath(from: Port, to: Port): string {
 // The children render on the server. Each [data-stop] among them is a node on the
 // neural path. Without the stage query, such as on touch screens, the track stays
 // a native snap carousel and none of this runs.
-export default function HorizontalTrack({ children, label, ghostText, links }: HorizontalTrackProps) {
+export default function HorizontalTrack({
+  children,
+  label,
+  ghostText,
+  links,
+  cardsKey,
+  toolbar,
+  frameRef,
+}: HorizontalTrackProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
+  const placedCards = useRef(cardsKey);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -61,6 +75,18 @@ export default function HorizontalTrack({ children, label, ghostText, links }: H
     const bar = barRef.current;
     const counter = counterRef.current;
     if (!stage || !viewport || !track || !ghost || !bar || !counter) return;
+
+    // A shorter stage could leave the page past its end, so new cards start from the
+    // first. A carousel isn't pinned, so moving the page would only lose the controls.
+    if (placedCards.current !== cardsKey) {
+      placedCards.current = cardsKey;
+      viewport.scrollLeft = 0;
+
+      const { top } = stage.getBoundingClientRect();
+      if (top < 0 && window.matchMedia(STAGE_QUERY).matches) {
+        window.scrollBy({ top, behavior: "instant" });
+      }
+    }
 
     const media = gsap.matchMedia();
 
@@ -91,6 +117,8 @@ export default function HorizontalTrack({ children, label, ghostText, links }: H
       const setBar = gsap.quickSetter(bar, "scaleX");
       let activeStop = 1;
 
+      setBar(0);
+      counter.textContent = "01";
       gsap.set(viewport, { overflow: "clip" });
       viewport.removeAttribute("tabindex");
       drawLinks();
@@ -159,21 +187,48 @@ export default function HorizontalTrack({ children, label, ghostText, links }: H
         );
       });
 
+      // The clipped viewport can't scroll to a control that takes focus off screen, so
+      // the page does it. Clicks are left out, since those cards are already in view.
+      const followFocus = ({ target }: FocusEvent) => {
+        const control = target as HTMLElement;
+        const stop = control.closest<HTMLElement>("[data-stop]");
+        if (!stop || !control.matches(":focus-visible")) return;
+
+        const { left, right } = stop.getBoundingClientRect();
+        if (left >= 0 && right <= window.innerWidth) return;
+
+        const box = getBoxWithin(stop, track);
+        const distance = getDistance();
+        const x = gsap.utils.clamp(0, distance, box.left + box.width / 2 - viewport.clientWidth / 2);
+        const { start, end } = scroll.scrollTrigger!;
+
+        window.scrollTo({ top: start + (x / distance) * (end - start) });
+      };
+
+      track.addEventListener("focusin", followFocus);
+
       return () => {
+        track.removeEventListener("focusin", followFocus);
         viewport.setAttribute("tabindex", "0");
       };
     });
 
     return () => media.revert();
-  }, []);
+  }, [cardsKey]);
 
   return (
     <div
       ref={stageRef}
-      style={{ "--research-stops": links } as CSSProperties}
-      className="research-stage"
+      style={{ "--track-stops": links } as CSSProperties}
+      className="track-stage"
     >
-      <div className="relative z-10 flex flex-col justify-center overflow-clip py-20 lg:sticky lg:top-0 lg:h-svh lg:min-h-160 lg:py-0">
+      {/* With a toolbar, the padding centers the track in the room left underneath it. */}
+      <div
+        ref={frameRef}
+        className={`relative z-10 flex flex-col justify-center overflow-clip py-20 lg:sticky lg:top-0 lg:h-svh lg:min-h-160 ${
+          toolbar ? "lg:pb-0 lg:pt-20" : "lg:py-0"
+        }`}
+      >
         <span
           ref={ghostRef}
           aria-hidden="true"
@@ -182,16 +237,22 @@ export default function HorizontalTrack({ children, label, ghostText, links }: H
           {ghostText}
         </span>
 
+        {toolbar && (
+          <div className="z-10 px-(--track-pad) max-lg:order-1 max-lg:mt-6 lg:absolute lg:inset-x-0 lg:top-20">
+            {toolbar}
+          </div>
+        )}
+
         {/* Focusable so keyboards can scroll it while it's a carousel. The stage drops
-            this when it takes over, since its cards have nothing else to focus. */}
+            this when it takes over, since the page's scroll moves it from then on. */}
         <div
           ref={viewportRef}
           role="region"
           aria-label={label}
           tabIndex={0}
-          className="snap-x snap-mandatory overflow-x-auto scroll-px-(--research-pad) [scrollbar-color:var(--color-navy-600)_transparent] [scrollbar-width:thin]"
+          className="snap-x snap-mandatory overflow-x-auto scroll-px-(--track-pad) [scrollbar-color:var(--color-navy-600)_transparent] [scrollbar-width:thin]"
         >
-          <div ref={trackRef} className="research-track relative">
+          <div ref={trackRef} className="track-rail relative">
             <svg
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 hidden size-full overflow-visible lg:block"
@@ -219,7 +280,9 @@ export default function HorizontalTrack({ children, label, ghostText, links }: H
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-(--research-pad) bottom-8 hidden items-center gap-4 font-mono text-xs text-navy-300 lg:motion-safe:flex"
+          className={`pointer-events-none absolute inset-x-(--track-pad) bottom-8 hidden items-center gap-4 font-mono text-xs text-navy-300 ${
+            links > 0 ? "lg:motion-safe:flex" : ""
+          }`}
         >
           <span>
             <span ref={counterRef}>01</span> / {String(links).padStart(2, "0")}

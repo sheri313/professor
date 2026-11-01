@@ -49,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <noscript>
           <style>
-            {".gsap-reveal{opacity:1!important;transform:none!important}header.fixed{position:absolute!important}.research-stage{height:auto!important}.member-panel,.book-panel{visibility:visible!important;opacity:1!important;translate:none!important;grid-row:auto!important;margin-bottom:2rem}"}
+            {".gsap-reveal{opacity:1!important;transform:none!important}header.fixed{position:absolute!important}.track-stage{height:auto!important}.publication-carousel{display:none!important}.member-panel{visibility:visible!important;opacity:1!important;translate:none!important;grid-row:auto!important;margin-bottom:2rem}"}
           </style>
         </noscript>
       </head>

@@ -19,7 +19,7 @@ export default function ResearchInterests({ interests }: ResearchInterestsProps)
       />
 
       <HorizontalTrack label="Research pillars" ghostText="Research" links={interests.length}>
-        <div data-stop className="w-(--research-intro) shrink-0 snap-center">
+        <div data-stop className="w-(--track-intro) shrink-0 snap-center">
           <Reveal>
             <SectionHeading
               eyebrow="Research"
@@ -36,12 +36,12 @@ export default function ResearchInterests({ interests }: ResearchInterestsProps)
           </Reveal>
         </div>
 
-        <ol className="flex items-center gap-(--research-gap)">
+        <ol className="flex items-center gap-(--track-gap)">
           {interests.map(({ id, title, description, icon: Icon, tags }, index) => (
             <li
               key={id}
               data-stop
-              className={`w-(--research-card) shrink-0 snap-center ${
+              className={`w-(--track-card) shrink-0 snap-center ${
                 index % 2 === 0 ? "lg:mb-28" : "lg:mt-28"
               }`}
             >
