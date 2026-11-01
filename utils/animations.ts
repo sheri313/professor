@@ -35,6 +35,14 @@ interface MagneticEffectOptions {
   ease?: gsap.TweenVars["ease"];
 }
 
+interface CardPointerOptions {
+  tilt?: boolean;
+  maxTilt?: number;
+  perspective?: number;
+  duration?: number;
+  ease?: gsap.TweenVars["ease"];
+}
+
 interface RevealStates {
   from: gsap.TweenVars;
   to: gsap.TweenVars;
@@ -46,6 +54,11 @@ export function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+// GSAP is running, so the CSS failsafe in globals.css must not un-hide anything early.
+function disableRevealFailsafe() {
+  document.documentElement.classList.add("gsap-ready");
+}
+
 export function formatCount(count: number, suffix = ""): string {
   return `${Math.round(count).toLocaleString("en-US")}${suffix}`;
 }
@@ -54,7 +67,7 @@ export function formatCount(count: number, suffix = ""): string {
 // screen readers, find-in-page, and keyboard focus until it scrolled into view.
 // Reduced motion keeps the fade and drops the movement, matching MotionProvider.
 export function getRevealStates(distance = 24): RevealStates {
-  document.documentElement.classList.add("gsap-ready");
+  disableRevealFailsafe();
 
   return {
     from: { opacity: 0, y: prefersReducedMotion() ? 0 : distance },
@@ -102,12 +115,34 @@ export function staggerReveal(
   return revealFrom(targets, options, { stagger });
 }
 
+// Returns a cleanup function that kills the trigger and any running reveal.
+//
+// The tween is only created on enter. A tween attached to a trigger gets reverted
+// so the trigger can measure it, and across every card on the page those forced
+// style recalculations were the longest task during load.
 export function scrollReveal(
   target: HTMLElement,
   { start = "top 88%", ...options }: ScrollRevealOptions = {},
-): gsap.core.Tween {
+): () => void {
+  disableRevealFailsafe();
   watchPageHeight();
-  return revealFrom(target, options, { scrollTrigger: { trigger: target, start, once: true } });
+
+  let reveal: gsap.core.Tween | undefined;
+  const trigger = ScrollTrigger.create({
+    trigger: target,
+    start,
+    end: "max",
+    // Not `once`: that waits for the end of the range, here the bottom of the page.
+    onEnter: (self) => {
+      self.kill();
+      reveal = revealFrom(target, options);
+    },
+  });
+
+  return () => {
+    trigger.kill();
+    reveal?.revert();
+  };
 }
 
 export function countUp(
@@ -125,6 +160,60 @@ export function countUp(
       element.textContent = formatCount(counter.value, suffix);
     },
   });
+}
+
+// Tilts the surface toward the pointer and moves the .card-glow spotlight with it.
+// Returns a cleanup function that removes the listeners and resets the card.
+export function cardPointerEffect(
+  hitArea: HTMLElement,
+  surface: HTMLElement,
+  {
+    tilt = true,
+    maxTilt = 7,
+    perspective = 900,
+    duration = 0.5,
+    ease = "power3.out",
+  }: CardPointerOptions = {},
+): () => void {
+  // Touch screens get the plain card: no listeners, and nothing to get stuck mid-tilt.
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return () => {};
+
+  const shouldTilt = tilt && !prefersReducedMotion();
+  if (shouldTilt) gsap.set(surface, { transformPerspective: perspective });
+
+  const rotateX = shouldTilt ? gsap.quickTo(surface, "rotationX", { duration, ease }) : null;
+  const rotateY = shouldTilt ? gsap.quickTo(surface, "rotationY", { duration, ease }) : null;
+
+  const handlePointerMove = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
+
+    const { left, top, width, height } = hitArea.getBoundingClientRect();
+    const x = event.clientX - left;
+    const y = event.clientY - top;
+
+    hitArea.style.setProperty("--glow-x", `${x}px`);
+    hitArea.style.setProperty("--glow-y", `${y}px`);
+    hitArea.dataset.glow = "";
+
+    rotateX?.((0.5 - y / height) * 2 * maxTilt);
+    rotateY?.((x / width - 0.5) * 2 * maxTilt);
+  };
+
+  const handlePointerLeave = () => {
+    delete hitArea.dataset.glow;
+    rotateX?.(0);
+    rotateY?.(0);
+  };
+
+  hitArea.addEventListener("pointermove", handlePointerMove);
+  hitArea.addEventListener("pointerleave", handlePointerLeave);
+
+  return () => {
+    hitArea.removeEventListener("pointermove", handlePointerMove);
+    hitArea.removeEventListener("pointerleave", handlePointerLeave);
+    gsap.killTweensOf(surface);
+    gsap.set(surface, { clearProps: "transform" });
+  };
 }
 
 // Returns a cleanup function that removes the listeners and resets the element.

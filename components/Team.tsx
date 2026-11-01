@@ -2,6 +2,7 @@ import { Briefcase, Globe, Mail, Megaphone, type LucideIcon } from "lucide-react
 import Avatar from "@/components/ui/Avatar";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
+import TiltCard from "@/components/ui/TiltCard";
 import type { MemberRole, Recruitment, TeamMember } from "@/data/professorData";
 
 interface TeamProps {
@@ -114,7 +115,7 @@ function MemberCard({ member }: MemberCardProps) {
   const { name, photo, researchArea } = member;
 
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-navy-100 bg-white p-5 transition duration-200 hover:border-accent-200 hover:shadow-md">
+    <article className="flex h-full flex-col rounded-2xl border border-navy-100 bg-white p-5 transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-center gap-4">
         <Avatar name={name} src={photo} size={64} className="bg-navy-900 text-white" />
         <div className="min-w-0">
@@ -183,7 +184,9 @@ export default function Team({ members, recruitment, contactEmail }: TeamProps) 
                   {group.map((member, index) => (
                     <li key={member.id}>
                       <Reveal delay={index * 0.05} className="h-full">
-                        <MemberCard member={member} />
+                        <TiltCard>
+                          <MemberCard member={member} />
+                        </TiltCard>
                       </Reveal>
                     </li>
                   ))}

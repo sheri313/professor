@@ -45,11 +45,8 @@ export default function Navbar({ name, lab, links }: NavbarProps) {
   const iconButtonTone = solid ? "text-navy-800" : "text-white";
 
   return (
-    <motion.header
-      initial={{ y: -16, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`reveal fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
+    <header
+      className={`nav-drop fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300 ${
         solid ? "border-navy-200/70 bg-white/80 shadow-sm" : "border-white/10 bg-navy-950/40"
       }`}
     >
@@ -154,6 +151,6 @@ export default function Navbar({ name, lab, links }: NavbarProps) {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </header>
   );
 }

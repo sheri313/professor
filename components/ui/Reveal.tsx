@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { scrollReveal } from "@/utils/animations";
 
@@ -13,13 +13,9 @@ interface RevealProps {
 export default function Reveal({ children, className = "", delay = 0 }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!ref.current) return;
-
-    const tween = scrollReveal(ref.current, { delay });
-    return () => {
-      tween.revert();
-    };
+    return scrollReveal(ref.current, { delay });
   }, [delay]);
 
   return (

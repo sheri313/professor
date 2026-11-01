@@ -15,6 +15,7 @@ import {
 import { Fragment, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
+import TiltCard from "@/components/ui/TiltCard";
 import type { Publication, PublicationType } from "@/data/professorData";
 
 interface PublicationsProps {
@@ -347,11 +348,13 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                   transition={{ duration: 0.2 }}
                 >
                   <Reveal>
-                    <PublicationCard
-                      publication={publication}
-                      highlightAuthor={highlightAuthor}
-                      onCite={setCiting}
-                    />
+                    <TiltCard tilt={false}>
+                      <PublicationCard
+                        publication={publication}
+                        highlightAuthor={highlightAuthor}
+                        onCite={setCiting}
+                      />
+                    </TiltCard>
                   </Reveal>
                 </motion.li>
               ))}

@@ -48,10 +48,7 @@ export default function Hero({ profile }: HeroProps) {
 
       const timeline = gsap
         .timeline({ defaults: { duration: 0.9, ease: SMOOTH_EASE } })
-        .fromTo('[data-hero="badge"]', from, to)
-        .fromTo('[data-hero="headline"]', from, to, overlap)
-        .fromTo('[data-hero="text"]', from, staggered, overlap)
-        .fromTo('[data-hero="portrait"]', from, to, "<")
+        .fromTo('[data-hero="portrait"]', from, to)
         .addLabel("metrics", overlap)
         .fromTo('[data-hero="metric"]', from, staggered, "metrics")
         .fromTo('[data-hero="cta"]', from, staggered, overlap);
@@ -88,17 +85,14 @@ export default function Hero({ profile }: HeroProps) {
       <div className="page-container pb-16 pt-28 lg:pb-20 lg:pt-36">
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_20rem] xl:gap-16">
           <div>
-            <p
-              data-hero="badge"
-              className="gsap-reveal inline-flex items-center gap-2 rounded-full border border-accent-400/30 bg-accent-400/10 px-3.5 py-1.5 text-sm font-medium text-accent-300"
+            {/* CSS animates this text so it paints without waiting for JavaScript. */}
+            <p className="hero-rise inline-flex items-center gap-2 rounded-full border border-accent-400/30 bg-accent-400/10 px-3.5 py-1.5 text-sm font-medium text-accent-300"
             >
               <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-400" />
               {labRole}
             </p>
 
-            <h1
-              data-hero="headline"
-              className="gsap-reveal mt-6 text-balance font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl xl:text-[3.5rem]"
+            <h1 className="hero-glide mt-6 text-balance font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl xl:text-[3.5rem]"
             >
               {profile.headlineLead}{" "}
               <span className="bg-linear-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">
@@ -106,10 +100,10 @@ export default function Hero({ profile }: HeroProps) {
               </span>
             </h1>
 
-            <p data-hero="text" className="gsap-reveal mt-6 max-w-2xl text-lg leading-8 text-navy-200">
+            <p className="hero-rise mt-6 max-w-2xl text-lg leading-8 text-navy-200 [animation-delay:160ms]">
               {tagline}
             </p>
-            <p data-hero="text" className="gsap-reveal mt-4 text-sm text-navy-300">
+            <p className="hero-rise mt-4 text-sm text-navy-300 [animation-delay:240ms]">
               <span className="font-semibold text-white">{name}</span>, {title}
             </p>
 

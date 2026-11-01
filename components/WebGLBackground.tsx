@@ -11,7 +11,7 @@ interface NetworkGraph {
 }
 
 const CANVAS_OPACITY = "0.35";
-const START_DELAY_MS = 1400;
+const START_EVENTS = ["pointermove", "pointerdown", "scroll", "keydown", "touchstart"];
 const FRAME_INTERVAL_MS = 1000 / 30;
 const MAX_PIXEL_RATIO = 1.5;
 const CAMERA_DISTANCE = 30;
@@ -221,8 +221,9 @@ export default function WebGLBackground() {
     let stopNetwork: (() => void) | undefined;
     let unmounted = false;
 
-    // Three.js is large, so it loads on demand once the hero animation has played.
-    const startTimer = setTimeout(async () => {
+    // Three.js is large, so it only loads once someone starts using the page.
+    const start = async () => {
+      removeStartListeners();
       if (!supportsWebGL()) return;
 
       try {
@@ -231,11 +232,17 @@ export default function WebGLBackground() {
       } catch {
         // No WebGL or a failed download only costs the decoration, so the page carries on.
       }
-    }, START_DELAY_MS);
+    };
+
+    const removeStartListeners = () => {
+      START_EVENTS.forEach((type) => window.removeEventListener(type, start));
+    };
+
+    START_EVENTS.forEach((type) => window.addEventListener(type, start, { passive: true }));
 
     return () => {
       unmounted = true;
-      clearTimeout(startTimer);
+      removeStartListeners();
       stopNetwork?.();
     };
   }, []);

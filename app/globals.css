@@ -74,6 +74,41 @@ body {
   }
 }
 
+/* A faint wash over the card, with a brighter spotlight masked to its border. */
+.card-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-2xl);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    18rem circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgb(16 185 129 / 0.07),
+    transparent 70%
+  );
+}
+
+.card-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: radial-gradient(
+    14rem circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    var(--color-accent-500),
+    transparent 70%
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+[data-glow] .card-glow {
+  opacity: 1;
+}
+
 /* Hidden in the server HTML until GSAP reveals it, so content can't flash first.
    The failsafe shows everything if scripts never run, such as after a failed download. */
 .gsap-reveal {
@@ -91,9 +126,60 @@ body {
   }
 }
 
+/* Above-the-fold text animates in CSS so it paints without waiting for JavaScript. */
+.hero-rise {
+  animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* Movement only: the headline is the largest paint, and fading it would hold that
+   back until the fade ends, so it has to be readable from the first frame. */
+.hero-glide {
+  animation: hero-glide 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.nav-drop {
+  animation: nav-drop 0.5s ease-out backwards;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes hero-glide {
+  from {
+    transform: translateY(24px);
+  }
+}
+
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .nav-drop {
+    animation-name: fade-in;
+  }
+
+  .hero-glide {
+    animation: none;
+  }
+}
+
 /* Reveals start hidden, so printed pages must opt out. */
 @media print {
-  .reveal,
   .gsap-reveal {
     opacity: 1 !important;
     transform: none !important;
