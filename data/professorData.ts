@@ -1,37 +1,108 @@
 // ============================================================
 // Professor Portfolio – Data Layer
+//
+// Everything below is fictional placeholder content. Mock DOIs use
+// Crossref's reserved test prefix (10.5555) and mock arXiv IDs are
+// out of range, so neither links to a real paper.
+//
+// Optional asset fields (profileImage, cv, photo, pdfUrl, syllabus)
+// render their image or link only once they are set. Drop the files
+// in public/ and point these fields at them.
 // ============================================================
+import {
+  AtSign,
+  BookOpen,
+  BrainCircuit,
+  Briefcase,
+  ChartColumn,
+  Cloud,
+  FileText,
+  FlaskConical,
+  GitBranch,
+  GraduationCap,
+  MousePointerClick,
+  Network,
+  Quote,
+  Search,
+  ShieldCheck,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 
 // ─── Shared primitives ───────────────────────────────────────
+export interface NavLink {
+  label: string;
+  href: `#${string}`;
+}
+
 export interface SocialLink {
   platform: string;
   url: string;
-  icon: string; // lucide icon name key
+  icon: LucideIcon;
+  featured?: boolean; // shown as a badge in the About quick facts
 }
 
 // ─── Professor bio / hero ────────────────────────────────────
 export interface ProfessorProfile {
   name: string;
+  citationName: string; // as printed on papers, highlighted in author lists
   title: string;
+  headlineLead: string;
+  headlineHighlight: string; // the gradient part of the hero headline
+  tagline: string;
   department: string;
   university: string;
   location: string;
+  labName: string;
+  labRole: string;
   email: string;
   phone: string;
   officeHours: string;
   officeLocation: string;
-  bio: string;
+  bio: string; // paragraphs separated by a blank line
   shortBio: string;
-  profileImage: string;
-  cv: string;
+  contactNote: string;
+  education: EducationEntry[];
+  editorialBoards: EditorialRole[];
+  keynotes: Keynote[];
+  profileImage?: string;
+  cv?: string;
   socials: SocialLink[];
   stats: Stat[];
 }
 
 export interface Stat {
   label: string;
-  value: string;
-  icon: string;
+  value: number;
+  suffix?: string;
+  icon: LucideIcon;
+}
+
+export interface EducationEntry {
+  degree: string;
+  institution: string;
+  year: number;
+}
+
+export interface EditorialRole {
+  role: string;
+  venue: string;
+  period: string;
+}
+
+export interface Keynote {
+  title: string;
+  event: string;
+  location: string;
+  year: number;
+}
+
+// ─── Recruitment ─────────────────────────────────────────────
+export interface Recruitment {
+  eyebrow: string;
+  title: string;
+  description: string;
+  positions: string[];
 }
 
 // ─── Research interests ──────────────────────────────────────
@@ -39,9 +110,8 @@ export interface ResearchInterest {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: LucideIcon;
   tags: string[];
-  color: string; // Tailwind bg class
 }
 
 // ─── Publications ────────────────────────────────────────────
@@ -83,7 +153,7 @@ export interface TeamMember {
   id: string;
   name: string;
   role: MemberRole;
-  photo: string;
+  photo?: string;
   researchArea: string;
   email: string;
   linkedin?: string;
@@ -96,130 +166,212 @@ export interface TeamMember {
 }
 
 // ─── Teaching ────────────────────────────────────────────────
+export type CourseLevel = "Undergraduate" | "Graduate";
+
+export type Semester = "Fall" | "Spring" | "Summer";
+
 export interface Course {
   id: string;
   code: string;
   title: string;
-  level: "Undergraduate" | "Graduate";
+  level: CourseLevel;
   credits: number;
   description: string;
-  semester: string;
+  semester: Semester;
   year: number;
   syllabus?: string;
   tags: string[];
 }
 
 // ─── News / Updates ──────────────────────────────────────────
+export type NewsType = "award" | "publication" | "talk" | "grant" | "misc";
+
 export interface NewsItem {
   id: string;
   date: string;
   title: string;
   description: string;
   link?: string;
-  type: "award" | "publication" | "talk" | "grant" | "misc";
+  type: NewsType;
 }
 
 // ============================================================
 // DATA
 // ============================================================
 
+export const navLinks: NavLink[] = [
+  { label: "About", href: "#about" },
+  { label: "Research", href: "#research" },
+  { label: "Publications", href: "#publications" },
+  { label: "Team", href: "#team" },
+  { label: "Contact", href: "#contact" },
+];
+
+export const footerLinks: NavLink[] = [
+  { label: "About", href: "#about" },
+  { label: "Research", href: "#research" },
+  { label: "Publications", href: "#publications" },
+  { label: "Team", href: "#team" },
+  { label: "Teaching", href: "#teaching" },
+  { label: "Contact", href: "#contact" },
+];
+
 export const professorProfile: ProfessorProfile = {
   name: "Dr. Eleanor A. Mitchell",
+  citationName: "Eleanor A. Mitchell",
   title: "Professor of Software Engineering & Human-Computer Interaction",
+  headlineLead: "Advancing the science of",
+  headlineHighlight: "Software Engineering & AI",
+  tagline:
+    "Building software systems that are not only correct, but measurably trustworthy, explainable, and resilient.",
   department: "Department of Computer Science & Engineering",
   university: "Westbrook Institute of Technology",
   location: "Cambridge, MA, USA",
-  email: "e.mitchell@westbrook.edu",
+  labName: "Software Intelligence Lab",
+  labRole: "Director, Software Intelligence Lab",
+  email: "e.mitchell@westbrook.example",
   phone: "+1 (617) 555-0192",
   officeHours: "Tuesdays & Thursdays, 2:00 PM – 4:00 PM",
   officeLocation: "Gates Hall, Room 412",
-  bio: `Dr. Eleanor A. Mitchell is a Professor of Software Engineering at the Westbrook Institute of Technology, where she leads the SERAS Lab (Software Engineering, Reliability, and Adaptive Systems). Her research sits at the intersection of software engineering, human-computer interaction, and artificial intelligence — with a focus on building software systems that are not only functionally correct but measurably trustworthy, explainable, and resilient.
+  bio: `Dr. Eleanor A. Mitchell is a Professor of Software Engineering at the Westbrook Institute of Technology, where she directs the Software Intelligence Lab. Her research sits at the intersection of software engineering, human-computer interaction, and artificial intelligence — with a focus on building software systems that are not only functionally correct but measurably trustworthy, explainable, and resilient.
 
-Before joining Westbrook, Dr. Mitchell was a Research Scientist at Google Brain (2013–2016) and a postdoctoral fellow at MIT CSAIL (2012–2013). She received her Ph.D. from Carnegie Mellon University in 2012, advised by Prof. James D. Herbsleb.
+Before joining Westbrook, Dr. Mitchell was a Research Scientist at Google Brain (2013–2016) and a postdoctoral fellow at MIT CSAIL (2012–2013). She received her Ph.D. from Carnegie Mellon University in 2012, advised by Prof. Marcus J. Aldridge.
 
-Dr. Mitchell has authored over 90 peer-reviewed papers, attracting more than 8,400 citations. Her work has been recognised with the ACM SIGSOFT Distinguished Paper Award (2019, 2022), an NSF CAREER Award (2018), and a Google Faculty Research Award (2021). She has served on the program committees of ICSE, FSE, SOSP, and NeurIPS, and regularly chairs workshops on trustworthy AI for software engineering.
+Dr. Mitchell has authored over 80 peer-reviewed papers, attracting more than 4,500 citations. Her work has been recognised with the ACM SIGSOFT Distinguished Paper Award (2022, 2024), an NSF CAREER Award (2018), and a Google Faculty Research Award (2021). She has served on the program committees of ICSE, FSE, SOSP, and NeurIPS, and regularly chairs workshops on trustworthy AI for software engineering. She serves on the editorial boards of IEEE Transactions on Software Engineering and Empirical Software Engineering, and is a frequent keynote speaker at major software engineering venues.
 
 Beyond research, Dr. Mitchell is deeply committed to inclusive education in computing. She founded the WIT Women in Computing Mentoring Circle and is a co-PI on the NSF-funded broadening-participation project "Code Without Borders."`,
 
-  shortBio: `Professor of Software Engineering at Westbrook Institute of Technology. Leading the SERAS Lab. Research interests: trustworthy AI, program analysis, software reliability, and HCI. NSF CAREER awardee. 90+ papers, 8,400+ citations.`,
+  shortBio: `Professor of Software Engineering at Westbrook Institute of Technology. Director of the Software Intelligence Lab. Research interests: AI code generation, distributed systems, cloud architecture, and empirical software engineering. NSF CAREER awardee. 80+ papers, 4,500+ citations.`,
 
-  profileImage: "/images/professor.jpg",
-  cv: "/files/mitchell-cv.pdf",
+
+  contactNote: `For research collaborations, speaking invitations, and media requests, email is the best way to reach me. Prospective students, please see the openings above before writing.`,
+
+  education: [
+    { degree: "Ph.D. in Computer Science", institution: "Carnegie Mellon University", year: 2012 },
+    { degree: "M.S. in Computer Science", institution: "University of Michigan", year: 2008 },
+    { degree: "B.S. in Computer Engineering", institution: "University of Waterloo", year: 2006 },
+  ],
+
+  editorialBoards: [
+    {
+      role: "Associate Editor",
+      venue: "IEEE Transactions on Software Engineering",
+      period: "2021–present",
+    },
+    {
+      role: "Editorial Board Member",
+      venue: "Empirical Software Engineering",
+      period: "2019–present",
+    },
+    {
+      role: "Review Board Member",
+      venue: "ACM Transactions on Software Engineering and Methodology",
+      period: "2018–2022",
+    },
+  ],
+
+  keynotes: [
+    {
+      title: "Shipping AI-Generated Code Safely",
+      event: "International Workshop on AI for Software Engineering",
+      location: "Lisbon, Portugal",
+      year: 2024,
+    },
+    {
+      title: "The Reliability Gap in AI-Assisted Coding",
+      event: "IEEE/ACM International Conference on Automated Software Engineering (ASE)",
+      location: "Luxembourg",
+      year: 2023,
+    },
+    {
+      title: "Trust as a Software Quality Attribute",
+      event: "ACM/IEEE Symposium on Empirical Software Engineering and Measurement (ESEM)",
+      location: "Helsinki, Finland",
+      year: 2022,
+    },
+  ],
 
   socials: [
-    { platform: "Google Scholar", url: "https://scholar.google.com", icon: "GraduationCap" },
-    { platform: "GitHub", url: "https://github.com", icon: "Github" },
-    { platform: "LinkedIn", url: "https://linkedin.com", icon: "Linkedin" },
-    { platform: "Twitter / X", url: "https://x.com", icon: "Twitter" },
-    { platform: "DBLP", url: "https://dblp.org", icon: "BookOpen" },
-    { platform: "Semantic Scholar", url: "https://semanticscholar.org", icon: "Search" },
+    { platform: "Google Scholar", url: "https://scholar.google.com", icon: GraduationCap, featured: true },
+    { platform: "ResearchGate", url: "https://www.researchgate.net", icon: FlaskConical, featured: true },
+    { platform: "GitHub", url: "https://github.com", icon: GitBranch },
+    { platform: "LinkedIn", url: "https://linkedin.com", icon: Briefcase },
+    { platform: "Twitter / X", url: "https://x.com", icon: AtSign },
+    { platform: "DBLP", url: "https://dblp.org", icon: BookOpen },
+    { platform: "Semantic Scholar", url: "https://semanticscholar.org", icon: Search },
   ],
 
   stats: [
-    { label: "Publications", value: "90+", icon: "FileText" },
-    { label: "Citations", value: "8,400+", icon: "Quote" },
-    { label: "h-index", value: "42", icon: "TrendingUp" },
-    { label: "Years Active", value: "15+", icon: "Clock" },
-    { label: "PhD Students", value: "12", icon: "Users" },
-    { label: "Research Grants", value: "$4.2M", icon: "DollarSign" },
+    { label: "Citations", value: 4500, suffix: "+", icon: Quote },
+    { label: "H-Index", value: 32, icon: TrendingUp },
+    { label: "Publications", value: 80, suffix: "+", icon: FileText },
+    { label: "Graduated PhDs", value: 15, icon: GraduationCap },
+  ],
+};
+
+// ─── Recruitment ─────────────────────────────────────────────
+export const recruitment: Recruitment = {
+  eyebrow: "Now recruiting",
+  title: "Openings for CSC & Grad Students",
+  description:
+    "The Software Intelligence Lab is looking for curious, motivated students to work on AI code generation, distributed systems, and empirical software engineering. To apply, send a short note with your CV, transcript, and the research direction that excites you most.",
+  positions: [
+    "China Scholarship Council (CSC) funded PhD students",
+    "CSC visiting scholars and joint PhD students",
+    "Fully funded PhD students, starting each fall",
+    "MSc thesis students and Westbrook undergraduates",
   ],
 };
 
 // ─── Research Interests ─────────────────────────────────────
 export const researchInterests: ResearchInterest[] = [
   {
+    id: "distributed-systems",
+    title: "Distributed Systems",
+    description:
+      "Designing and validating large-scale distributed systems that stay reliable under failure, using automated fault injection, chaos experiments, and runtime verification.",
+    icon: Network,
+    tags: ["Fault Tolerance", "Chaos Engineering", "Consensus", "Observability"],
+  },
+  {
+    id: "ai-code-generation",
+    title: "AI Code Generation",
+    description:
+      "Auditing and improving LLM-generated code so it is correct, secure, and maintainable, combining program analysis with specification inference and automated repair.",
+    icon: BrainCircuit,
+    tags: ["LLMs", "Program Repair", "Static Analysis", "Specification Inference"],
+  },
+  {
+    id: "cloud-architecture",
+    title: "Cloud Architecture",
+    description:
+      "Patterns and tooling for cloud-native platforms, from microservice design to self-tuning CI/CD pipelines and safe deployment of machine learning systems.",
+    icon: Cloud,
+    tags: ["Microservices", "CI/CD", "MLOps", "Site Reliability"],
+  },
+  {
+    id: "empirical-se",
+    title: "Empirical Software Engineering",
+    description:
+      "Large-scale studies of repositories, issue trackers, and developer behavior that turn software evolution, technical debt, and team dynamics into actionable evidence.",
+    icon: ChartColumn,
+    tags: ["Repository Mining", "Technical Debt", "Controlled Experiments", "OSS Ecosystems"],
+  },
+  {
     id: "trustworthy-ai",
     title: "Trustworthy & Explainable AI",
     description:
-      "Developing methods and tools that make AI-assisted software engineering decisions interpretable, auditable, and fair — enabling engineers to understand, verify, and trust AI outputs in safety-critical contexts.",
-    icon: "ShieldCheck",
+      "Developing methods and tools that make AI-assisted software engineering decisions interpretable, auditable, and fair, so engineers can understand, verify, and trust AI outputs in safety-critical contexts.",
+    icon: ShieldCheck,
     tags: ["XAI", "Fairness", "Safety", "LLM Auditing"],
-    color: "from-emerald-500 to-teal-600",
-  },
-  {
-    id: "program-analysis",
-    title: "Automated Program Analysis",
-    description:
-      "Static and dynamic program analysis techniques for bug detection, vulnerability discovery, and automated repair. Current focus: LLM-guided symbolic execution and specification inference.",
-    icon: "Code2",
-    tags: ["Static Analysis", "Symbolic Execution", "Bug Repair", "Fuzzing"],
-    color: "from-blue-500 to-indigo-600",
-  },
-  {
-    id: "software-reliability",
-    title: "Software Reliability Engineering",
-    description:
-      "Systematic approaches to measuring, predicting, and improving the reliability of large-scale distributed systems. Includes chaos engineering, fault injection, and runtime monitoring.",
-    icon: "Activity",
-    tags: ["Chaos Engineering", "Fault Tolerance", "SRE", "Observability"],
-    color: "from-violet-500 to-purple-600",
   },
   {
     id: "hci-devtools",
     title: "Human-Centered Developer Tools",
     description:
-      "Empirical studies of programmer cognition, collaborative coding, and the design of IDE plugins and AI-pair-programming tools that augment — not replace — human creativity.",
-    icon: "MousePointerClick",
+      "Empirical studies of programmer cognition, collaborative coding, and the design of IDE plugins and AI pair-programming tools that augment human creativity rather than replace it.",
+    icon: MousePointerClick,
     tags: ["IDE Design", "Code Review", "Pair Programming", "Cognitive Load"],
-    color: "from-rose-500 to-pink-600",
-  },
-  {
-    id: "mse",
-    title: "Mining Software Repositories",
-    description:
-      "Large-scale empirical analysis of code repositories, issue trackers, and communication channels to uncover actionable insights about software evolution, technical debt, and team dynamics.",
-    icon: "BarChart3",
-    tags: ["GitHub Mining", "NLP", "Technical Debt", "OSS Ecosystems"],
-    color: "from-amber-500 to-orange-600",
-  },
-  {
-    id: "se4ml",
-    title: "Software Engineering for ML Systems",
-    description:
-      "Adapting classical SE practices — testing, versioning, CI/CD — to the unique challenges of ML pipelines: data drift, model degradation, reproducibility, and deployment safety.",
-    icon: "BrainCircuit",
-    tags: ["MLOps", "Model Testing", "Data Versioning", "ML Pipelines"],
-    color: "from-cyan-500 to-sky-600",
   },
 ];
 
@@ -228,13 +380,12 @@ export const publications: Publication[] = [
   {
     id: "pub-2024-01",
     title: "TrustLens: Auditing LLM-Generated Code for Safety and Correctness",
-    authors: ["Eleanor A. Mitchell", "Ravi K. Sharma", "Yuna Takahashi", "James D. Herbsleb"],
+    authors: ["Eleanor A. Mitchell", "Ravi K. Sharma", "Yuna Takahashi", "Marcus J. Aldridge"],
     venue: "ACM International Conference on Software Engineering (ICSE)",
     year: 2024,
     type: "conference",
-    doi: "10.1145/3597503.3623309",
-    arxiv: "2401.12345",
-    pdfUrl: "/papers/trustlens-icse2024.pdf",
+    doi: "10.5555/mock.trustlens.2024",
+    arxiv: "2401.99901",
     abstract:
       "Large Language Models (LLMs) are increasingly used to generate production code, yet systematic auditing of their safety and correctness properties remains ad-hoc. We present TrustLens, a framework that combines lightweight static analysis with semantic similarity search to flag generated code snippets that violate programmer-specified invariants or introduce Common Weakness Enumeration (CWE) vulnerabilities. An evaluation on 12,000 LLM-generated functions shows TrustLens achieves 91.3% precision and 87.6% recall at a 4× speedup over manual review.",
     tags: ["LLM", "Code Generation", "Static Analysis", "Security"],
@@ -243,10 +394,10 @@ export const publications: Publication[] = [
     award: "ACM SIGSOFT Distinguished Paper Award",
     bibtex: `@inproceedings{mitchell2024trustlens,
   title     = {{TrustLens}: Auditing {LLM}-Generated Code for Safety and Correctness},
-  author    = {Mitchell, Eleanor A. and Sharma, Ravi K. and Takahashi, Yuna and Herbsleb, James D.},
+  author    = {Mitchell, Eleanor A. and Sharma, Ravi K. and Takahashi, Yuna and Aldridge, Marcus J.},
   booktitle = {Proceedings of the 46th International Conference on Software Engineering (ICSE)},
   year      = {2024},
-  doi       = {10.1145/3597503.3623309},
+  doi       = {10.5555/mock.trustlens.2024},
   pages     = {1--12},
   publisher = {ACM},
   address   = {Lisbon, Portugal}
@@ -259,9 +410,8 @@ export const publications: Publication[] = [
     venue: "ACM Joint European Software Engineering Conference / Foundations of Software Engineering (ESEC/FSE)",
     year: 2023,
     type: "conference",
-    doi: "10.1145/3611643.3613876",
-    arxiv: "2308.04511",
-    pdfUrl: "/papers/specinfer-fse2023.pdf",
+    doi: "10.5555/mock.specinfer.2023",
+    arxiv: "2308.99902",
     abstract:
       "We introduce SpecInfer, a technique for mining probabilistic program specifications from neural-network-driven test generation. By analysing the distribution of test inputs produced by a learned model, SpecInfer constructs likely invariants expressed as probabilistic assertions. On 20 real-world Java projects, SpecInfer surfaces 73% of the manually curated invariants missed by Daikon, with a false-positive rate below 8%.",
     tags: ["Specification Inference", "Neural Testing", "Program Analysis"],
@@ -272,7 +422,7 @@ export const publications: Publication[] = [
   author    = {Takahashi, Yuna and Mitchell, Eleanor A. and Bose, Arjun},
   booktitle = {Proceedings of the ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE)},
   year      = {2023},
-  doi       = {10.1145/3611643.3613876},
+  doi       = {10.5555/mock.specinfer.2023},
   pages     = {234--246},
   publisher = {ACM},
   address   = {San Francisco, CA, USA}
@@ -285,8 +435,7 @@ export const publications: Publication[] = [
     venue: "IEEE/ACM International Conference on Automated Software Engineering (ASE)",
     year: 2023,
     type: "conference",
-    doi: "10.1109/ASE56229.2023.00041",
-    pdfUrl: "/papers/chaosguard-ase2023.pdf",
+    doi: "10.5555/mock.chaosguard.2023",
     abstract:
       "Chaos engineering validates system resilience by intentionally injecting faults, but designing effective experiments at scale remains a manual, expert-intensive activity. ChaosGuard uses service dependency graphs and historical incident reports to synthesise and prioritise chaos scenarios automatically. In a study with three production microservice systems (collectively handling 50 M+ requests/day), ChaosGuard surfaced 14 previously unknown failure modes within 24 hours of integration.",
     tags: ["Chaos Engineering", "Microservices", "Fault Injection", "Reliability"],
@@ -297,7 +446,7 @@ export const publications: Publication[] = [
   author    = {Nwosu, David and Mitchell, Eleanor A. and Patel, Priya},
   booktitle = {Proceedings of the 38th IEEE/ACM International Conference on Automated Software Engineering (ASE)},
   year      = {2023},
-  doi       = {10.1109/ASE56229.2023.00041},
+  doi       = {10.5555/mock.chaosguard.2023},
   pages     = {312--323},
   publisher = {IEEE},
   address   = {Kirchberg, Luxembourg}
@@ -310,9 +459,8 @@ export const publications: Publication[] = [
     venue: "ACM International Conference on Software Engineering (ICSE)",
     year: 2022,
     type: "conference",
-    doi: "10.1145/3510003.3510042",
-    arxiv: "2112.09876",
-    pdfUrl: "/papers/faircode-icse2022.pdf",
+    doi: "10.5555/mock.faircode.2022",
+    arxiv: "2112.99903",
     abstract:
       "Code-completion models trained on public repositories may perpetuate or amplify demographic biases embedded in variable names, comments, and API choices. FairCode provides a benchmark suite of 4,800 code snippets annotated for five bias dimensions, along with debiasing fine-tuning strategies. Our experiments show that targeted fine-tuning reduces bias scores by 62% while preserving completion accuracy within 2% of the baseline.",
     tags: ["Fairness", "Code Completion", "Bias", "ML for SE"],
@@ -324,7 +472,7 @@ export const publications: Publication[] = [
   author    = {Mitchell, Eleanor A. and Reyes, Sofia and Zhang, Wei and Holm, Lena},
   booktitle = {Proceedings of the 44th International Conference on Software Engineering (ICSE)},
   year      = {2022},
-  doi       = {10.1145/3510003.3510042},
+  doi       = {10.5555/mock.faircode.2022},
   pages     = {879--890},
   publisher = {ACM},
   address   = {Pittsburgh, PA, USA}
@@ -333,12 +481,11 @@ export const publications: Publication[] = [
   {
     id: "pub-2021-01",
     title: "CognitiveCost: Measuring the Mental Overhead of Code Review at Scale",
-    authors: ["Arjun Bose", "Eleanor A. Mitchell", "Thomas Zimmermann"],
+    authors: ["Arjun Bose", "Eleanor A. Mitchell", "Tobias Renner"],
     venue: "Empirical Software Engineering (EMSE)",
     year: 2021,
     type: "journal",
-    doi: "10.1007/s10664-021-09975-5",
-    pdfUrl: "/papers/cognitivecost-emse2021.pdf",
+    doi: "10.5555/mock.cognitivecost.2021",
     abstract:
       "Code review is a cornerstone of collaborative software development, yet its cognitive demands are rarely quantified. We instrumented GitHub pull-request workflows with eye-tracking and think-aloud protocols across 38 professional developers, producing the CognitiveCost dataset. Regression analysis reveals that cyclomatic complexity, reviewer expertise gap, and review latency are the strongest predictors of cognitive load, offering actionable guidance for tool designers.",
     tags: ["Code Review", "Cognitive Load", "HCI", "Empirical Study"],
@@ -346,13 +493,13 @@ export const publications: Publication[] = [
     citations: 134,
     bibtex: `@article{bose2021cognitivecost,
   title   = {{CognitiveCost}: Measuring the Mental Overhead of Code Review at Scale},
-  author  = {Bose, Arjun and Mitchell, Eleanor A. and Zimmermann, Thomas},
+  author  = {Bose, Arjun and Mitchell, Eleanor A. and Renner, Tobias},
   journal = {Empirical Software Engineering},
   year    = {2021},
   volume  = {26},
   number  = {4},
   pages   = {1--42},
-  doi     = {10.1007/s10664-021-09975-5},
+  doi     = {10.5555/mock.cognitivecost.2021},
   publisher = {Springer}
 }`,
   },
@@ -363,8 +510,7 @@ export const publications: Publication[] = [
     venue: "ACM/IEEE International Symposium on Empirical Software Engineering and Measurement (ESEM)",
     year: 2020,
     type: "conference",
-    doi: "10.1145/3382494.3410677",
-    pdfUrl: "/papers/techdebtmap-esem2020.pdf",
+    doi: "10.5555/mock.techdebtmap.2020",
     abstract:
       "Managing technical debt in multi-million-line codebases requires prioritisation beyond simple heuristics. TechDebtMap combines static analysis, commit history mining, and developer surveys to generate interactive heat-maps that rank debt items by business impact and remediation cost. A controlled experiment with 5 industrial partners showed that TechDebtMap improved prioritisation accuracy by 38% compared to SonarQube defaults.",
     tags: ["Technical Debt", "Mining", "Visualisation", "Empirical"],
@@ -375,7 +521,7 @@ export const publications: Publication[] = [
   author    = {Mitchell, Eleanor A. and Nwosu, David and Wolf, Kasimir},
   booktitle = {Proceedings of the ACM/IEEE International Symposium on Empirical Software Engineering and Measurement (ESEM)},
   year      = {2020},
-  doi       = {10.1145/3382494.3410677},
+  doi       = {10.5555/mock.techdebtmap.2020},
   pages     = {1--11},
   publisher = {ACM},
   address   = {Bari, Italy}
@@ -388,9 +534,8 @@ export const publications: Publication[] = [
     venue: "ACM/IEEE International Conference on Software Engineering (ICSE)",
     year: 2019,
     type: "conference",
-    doi: "10.1109/ICSE.2019.00056",
-    arxiv: "1902.07624",
-    pdfUrl: "/papers/adaptiveci-icse2019.pdf",
+    doi: "10.5555/mock.adaptiveci.2019",
+    arxiv: "1902.99904",
     abstract:
       "Continuous integration pipelines waste significant developer time on unnecessary test runs. AdaptiveCI employs a contextual bandit to select which test subsets to execute based on code-change features, optimising for fault-detection rate under time constraints. Evaluated on four open-source projects, AdaptiveCI reduces test execution time by 54% while detecting 96.2% of faults caught by the full suite.",
     tags: ["CI/CD", "Reinforcement Learning", "Test Prioritisation", "Automation"],
@@ -401,7 +546,7 @@ export const publications: Publication[] = [
   author    = {Patel, Priya and Mitchell, Eleanor A.},
   booktitle = {Proceedings of the 41st International Conference on Software Engineering (ICSE)},
   year      = {2019},
-  doi       = {10.1109/ICSE.2019.00056},
+  doi       = {10.5555/mock.adaptiveci.2019},
   pages     = {544--555},
   publisher = {IEEE},
   address   = {Montreal, QC, Canada}
@@ -414,8 +559,7 @@ export const publications: Publication[] = [
     venue: "IEEE Transactions on Software Engineering (TSE)",
     year: 2018,
     type: "journal",
-    doi: "10.1109/TSE.2018.2854302",
-    pdfUrl: "/papers/explainability-taxonomy-tse2018.pdf",
+    doi: "10.5555/mock.explainability.2018",
     abstract:
       "ML-based bug detectors achieve high accuracy but offer little insight into their decisions, limiting practitioner trust. We survey 47 explainability techniques across four families — feature attribution, concept-based, counterfactual, and example-based — and evaluate them against a taxonomy of eight developer-centric desiderata. Our findings surface critical gaps and motivate a new research agenda for explainable bug detection.",
     tags: ["XAI", "Bug Detection", "Explainability", "Survey"],
@@ -429,7 +573,7 @@ export const publications: Publication[] = [
   volume  = {46},
   number  = {12},
   pages   = {1332--1358},
-  doi     = {10.1109/TSE.2018.2854302},
+  doi     = {10.5555/mock.explainability.2018},
   publisher = {IEEE}
 }`,
   },
@@ -441,12 +585,11 @@ export const teamMembers: TeamMember[] = [
     id: "ravi-sharma",
     name: "Ravi K. Sharma",
     role: "PhD Student",
-    photo: "/images/team/ravi.jpg",
     researchArea: "Trustworthy AI & LLM Code Auditing",
-    email: "r.sharma@westbrook.edu",
+    email: "r.sharma@westbrook.example",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
-    personalSite: "https://ravikumar.dev",
+    personalSite: "https://example.com",
     year: 2021,
     bio: "Ravi is a 4th-year PhD student investigating interpretability and safety verification for LLM-generated code. He holds an M.Tech from IIT Bombay and previously interned at Microsoft Research and DeepMind.",
   },
@@ -454,9 +597,8 @@ export const teamMembers: TeamMember[] = [
     id: "yuna-takahashi",
     name: "Yuna Takahashi",
     role: "PhD Student",
-    photo: "/images/team/yuna.jpg",
     researchArea: "Specification Inference & Program Analysis",
-    email: "y.takahashi@westbrook.edu",
+    email: "y.takahashi@westbrook.example",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
     year: 2020,
@@ -466,9 +608,8 @@ export const teamMembers: TeamMember[] = [
     id: "david-nwosu",
     name: "David Nwosu",
     role: "PhD Student",
-    photo: "/images/team/david.jpg",
     researchArea: "Software Reliability & Chaos Engineering",
-    email: "d.nwosu@westbrook.edu",
+    email: "d.nwosu@westbrook.example",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
     year: 2021,
@@ -478,11 +619,10 @@ export const teamMembers: TeamMember[] = [
     id: "arjun-bose",
     name: "Arjun Bose",
     role: "PhD Student",
-    photo: "/images/team/arjun.jpg",
     researchArea: "Human-Centered Developer Tools & Code Review",
-    email: "a.bose@westbrook.edu",
+    email: "a.bose@westbrook.example",
     github: "https://github.com",
-    personalSite: "https://arjunbose.io",
+    personalSite: "https://example.com",
     year: 2019,
     bio: "Arjun studies the cognitive dimensions of software development, with a focus on code review and pair programming. His interdisciplinary background spans CS and cognitive science.",
   },
@@ -490,9 +630,8 @@ export const teamMembers: TeamMember[] = [
     id: "sofia-reyes",
     name: "Sofia Reyes",
     role: "PhD Student",
-    photo: "/images/team/sofia.jpg",
     researchArea: "Fairness & Bias in ML-for-SE",
-    email: "s.reyes@westbrook.edu",
+    email: "s.reyes@westbrook.example",
     linkedin: "https://linkedin.com",
     year: 2022,
     bio: "Sofia investigates demographic bias in AI-assisted coding tools. She is a NSF GRFP Fellow and holds a B.S. in CS and Gender Studies from the University of Michigan.",
@@ -501,22 +640,20 @@ export const teamMembers: TeamMember[] = [
     id: "priya-patel",
     name: "Priya Patel",
     role: "Postdoctoral Researcher",
-    photo: "/images/team/priya.jpg",
     researchArea: "CI/CD Automation & Software Testing",
-    email: "p.patel@westbrook.edu",
+    email: "p.patel@westbrook.example",
     github: "https://github.com",
     linkedin: "https://linkedin.com",
-    personalSite: "https://priyapatel.net",
+    personalSite: "https://example.com",
     year: 2023,
-    bio: "Priya completed her PhD at ETH Zürich on reinforcement learning for test optimisation. She is now a postdoctoral researcher at SERAS Lab, leading the NSF-funded project on adaptive CI/CD pipelines.",
+    bio: "Priya completed her PhD at ETH Zürich on reinforcement learning for test optimisation. She is now a postdoctoral researcher at the Software Intelligence Lab, leading the NSF-funded project on adaptive CI/CD pipelines.",
   },
   {
     id: "wei-zhang",
     name: "Wei Zhang",
     role: "MSc Student",
-    photo: "/images/team/wei.jpg",
     researchArea: "Mining Software Repositories",
-    email: "w.zhang@westbrook.edu",
+    email: "w.zhang@westbrook.example",
     github: "https://github.com",
     year: 2023,
     bio: "Wei is an MSc student analysing the evolution of open-source AI frameworks using large-scale repository mining. He holds a B.Eng. from Tsinghua University.",
@@ -525,9 +662,8 @@ export const teamMembers: TeamMember[] = [
     id: "lena-holm",
     name: "Lena Holm",
     role: "Alumni",
-    photo: "/images/team/lena.jpg",
     researchArea: "Fairness in SE",
-    email: "lena.holm@acm.org",
+    email: "lena.holm@westbrook.example",
     linkedin: "https://linkedin.com",
     year: 2019,
     graduated: 2024,
@@ -548,7 +684,6 @@ export const courses: Course[] = [
       "A rigorous introduction to the principles and practices of modern software engineering. Topics include requirements engineering, agile methodologies, design patterns, testing, version control, CI/CD, and software project management. Students complete a semester-long team project shipping a full-stack web application.",
     semester: "Fall",
     year: 2024,
-    syllabus: "/syllabi/cs301-fall2024.pdf",
     tags: ["Agile", "Design Patterns", "Testing", "CI/CD"],
   },
   {
@@ -561,7 +696,6 @@ export const courses: Course[] = [
       "Comprehensive coverage of software testing theory and practice: unit, integration, system, regression, fuzzing, property-based testing, and mutation testing. Emphasises tool-supported workflows and test automation infrastructure. Guest lectures from industry practitioners.",
     semester: "Spring",
     year: 2025,
-    syllabus: "/syllabi/cs480-spring2025.pdf",
     tags: ["Unit Testing", "Fuzzing", "Mutation Testing", "Test Automation"],
   },
   {
@@ -574,7 +708,6 @@ export const courses: Course[] = [
       "A reading-and-discussion seminar covering landmark and state-of-the-art papers in software engineering research. Topics rotate annually; 2024–25 focus: AI-assisted software development, with sub-topics on code generation, program repair, and developer productivity measurement.",
     semester: "Fall",
     year: 2024,
-    syllabus: "/syllabi/cs601-fall2024.pdf",
     tags: ["Research Seminar", "AI for SE", "Paper Reading", "Graduate"],
   },
   {
@@ -624,7 +757,7 @@ export const newsItems: NewsItem[] = [
   {
     id: "news-2023-11",
     date: "November 2023",
-    title: "Keynote at ASE 2023: "The Reliability Gap in AI-Assisted Coding"",
+    title: "Keynote at ASE 2023: “The Reliability Gap in AI-Assisted Coding”",
     description:
       "Dr. Mitchell delivered the opening keynote at the 38th IEEE/ACM International Conference on Automated Software Engineering in Luxembourg.",
     type: "talk",
@@ -640,7 +773,7 @@ export const newsItems: NewsItem[] = [
   {
     id: "news-2022-04",
     date: "April 2022",
-    title: "FairCode wins Best Paper at ICSE 2022",
+    title: "FairCode wins ACM SIGSOFT Distinguished Paper Award at ICSE 2022",
     description:
       "FairCode, our work on detecting demographic bias in code-completion models, received the ACM SIGSOFT Distinguished Paper Award at ICSE 2022.",
     type: "award",
@@ -650,7 +783,7 @@ export const newsItems: NewsItem[] = [
     date: "September 2021",
     title: "Google Faculty Research Award",
     description:
-      "Dr. Mitchell received a Google Faculty Research Award for the project "Explainable and Auditable AI for Software Quality Assurance."",
+      "Dr. Mitchell received a Google Faculty Research Award for the project “Explainable and Auditable AI for Software Quality Assurance.”",
     type: "award",
   },
 ];
