@@ -240,17 +240,17 @@ export const footerLinks: NavLink[] = [
 export const professorProfile: ProfessorProfile = {
   name: "Dr. Eleanor A. Mitchell",
   citationName: "Eleanor A. Mitchell",
-  title: "Professor of Software Engineering & Human-Computer Interaction",
+  title: "Lecturer & Researcher in Health Informatics & Systems",
   headlineLead: "Advancing the science of",
   headlineHighlight: "Software Engineering & AI",
   tagline:
     "Building software systems that are not only correct, but measurably trustworthy, explainable, and resilient.",
-  department: "Department of Computer Science & Engineering",
-  university: "Westbrook Institute of Technology",
-  location: "Cambridge, MA, USA",
-  labName: "Software Intelligence Lab",
+  department: "School of Rural Health / Department of Software & Systems Integration",
+  university: "Monash University, Australia",
+  location: "Australia",
+  labName: "Dr. Eleanor A. Mitchell Lab",
   labRole: "Director, Software Intelligence Lab",
-  email: "e.mitchell@westbrook.example",
+  email: "e.mitchell@monash.example",
   phone: "+1 (617) 555-0192",
   officeHours: [
     { day: "Tuesday", time: "2:00 PM – 4:00 PM", format: "In person" },
@@ -259,15 +259,15 @@ export const professorProfile: ProfessorProfile = {
   ],
   officeLocation: "Gates Hall, Room 412",
   officeAddress: ["100 Westbrook Way", "Cambridge, MA 02139, USA"],
-  bio: `Dr. Eleanor A. Mitchell is a Professor of Software Engineering at the Westbrook Institute of Technology, where she directs the Software Intelligence Lab. Her research sits at the intersection of software engineering, human-computer interaction, and artificial intelligence — with a focus on building software systems that are not only functionally correct but measurably trustworthy, explainable, and resilient.
+  bio: `Dr. Eleanor A. Mitchell is a Professor of Software Engineering at Monash University, where she directs the Software Intelligence Lab. Her research sits at the intersection of software engineering, human-computer interaction, and artificial intelligence — with a focus on building software systems that are not only functionally correct but measurably trustworthy, explainable, and resilient.
 
-Before joining Westbrook, Dr. Mitchell was a Research Scientist at Google Brain (2013–2016) and a postdoctoral fellow at MIT CSAIL (2012–2013). She received her Ph.D. from Carnegie Mellon University in 2012, advised by Prof. Marcus J. Aldridge.
+Before joining Monash, Dr. Mitchell was a Research Scientist at Google Brain (2013–2016) and a postdoctoral fellow at MIT CSAIL (2012–2013). She received her Ph.D. from Carnegie Mellon University in 2012, advised by Prof. Marcus J. Aldridge.
 
 Dr. Mitchell has authored over 80 peer-reviewed papers, attracting more than 4,500 citations. Her work has been recognised with the ACM SIGSOFT Distinguished Paper Award (2022, 2024), an NSF CAREER Award (2018), and a Google Faculty Research Award (2021). She has served on the program committees of ICSE, FSE, SOSP, and NeurIPS, and regularly chairs workshops on trustworthy AI for software engineering. She serves on the editorial boards of IEEE Transactions on Software Engineering and Empirical Software Engineering, and is a frequent keynote speaker at major software engineering venues.
 
 Beyond research, Dr. Mitchell is deeply committed to inclusive education in computing. She founded the WIT Women in Computing Mentoring Circle and is a co-PI on the NSF-funded broadening-participation project "Code Without Borders."`,
 
-  shortBio: `Professor of Software Engineering at Westbrook Institute of Technology. Director of the Software Intelligence Lab. Research interests: AI code generation, distributed systems, cloud architecture, and empirical software engineering. NSF CAREER awardee. 80+ papers, 4,500+ citations.`,
+  shortBio: `Professor of Software Engineering at Monash University. Director of the Software Intelligence Lab. Research interests: AI code generation, distributed systems, cloud architecture, and empirical software engineering. NSF CAREER awardee. 80+ papers, 4,500+ citations.`,
 
 
   contactNote: `For research collaborations, speaking invitations, and media requests, email is the best way to reach me. Prospective students, please see the openings above before writing.`,
