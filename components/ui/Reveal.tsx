@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useLayoutEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { scrollReveal } from "@/utils/animations";
 
 interface RevealProps {
   children: ReactNode;
@@ -10,15 +11,20 @@ interface RevealProps {
 }
 
 export default function Reveal({ children, className = "", delay = 0 }: RevealProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+
+    const tween = scrollReveal(ref.current, { delay });
+    return () => {
+      tween.revert();
+    };
+  }, [delay]);
+
   return (
-    <motion.div
-      className={`reveal ${className}`}
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
-    >
+    <div ref={ref} className={`gsap-reveal ${className}`}>
       {children}
-    </motion.div>
+    </div>
   );
 }

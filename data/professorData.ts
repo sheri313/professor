@@ -18,16 +18,13 @@ import {
   Briefcase,
   ChartColumn,
   Cloud,
-  FileText,
   FlaskConical,
   GitBranch,
   GraduationCap,
   MousePointerClick,
   Network,
-  Quote,
   Search,
   ShieldCheck,
-  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -80,12 +77,29 @@ export interface OfficeHourSlot {
   format: string;
 }
 
+// A key rather than an icon component, because stats cross into the client-side Hero.
+export type StatIconName = "citations" | "hIndex" | "publications" | "graduates";
+
 export interface Stat {
   label: string;
   value: number;
   suffix?: string;
-  icon: LucideIcon;
+  icon: StatIconName;
 }
+
+// Only the fields Hero needs. Socials hold icon components, which can't cross into a client component.
+export type HeroProfile = Pick<
+  ProfessorProfile,
+  | "name"
+  | "title"
+  | "university"
+  | "labRole"
+  | "headlineLead"
+  | "headlineHighlight"
+  | "tagline"
+  | "profileImage"
+  | "stats"
+>;
 
 export interface EducationEntry {
   degree: string;
@@ -314,10 +328,10 @@ Beyond research, Dr. Mitchell is deeply committed to inclusive education in comp
   ],
 
   stats: [
-    { label: "Citations", value: 4500, suffix: "+", icon: Quote },
-    { label: "H-Index", value: 32, icon: TrendingUp },
-    { label: "Publications", value: 80, suffix: "+", icon: FileText },
-    { label: "Graduated PhDs", value: 15, icon: GraduationCap },
+    { label: "Citations", value: 4500, suffix: "+", icon: "citations" },
+    { label: "H-Index", value: 32, icon: "hIndex" },
+    { label: "Publications", value: 80, suffix: "+", icon: "publications" },
+    { label: "Graduated PhDs", value: 15, icon: "graduates" },
   ],
 };
 

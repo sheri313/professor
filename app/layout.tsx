@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <noscript>
           <style>
-            {".reveal{opacity:1!important;transform:none!important}header.fixed{position:absolute!important}"}
+            {".reveal,.gsap-reveal{opacity:1!important;transform:none!important}header.fixed{position:absolute!important}"}
           </style>
         </noscript>
       </head>

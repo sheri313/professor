@@ -346,11 +346,13 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <PublicationCard
-                    publication={publication}
-                    highlightAuthor={highlightAuthor}
-                    onCite={setCiting}
-                  />
+                  <Reveal>
+                    <PublicationCard
+                      publication={publication}
+                      highlightAuthor={highlightAuthor}
+                      onCite={setCiting}
+                    />
+                  </Reveal>
                 </motion.li>
               ))}
             </AnimatePresence>

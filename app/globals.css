@@ -41,8 +41,9 @@
   color-scheme: light;
 }
 
+/* z-10 keeps content above the fixed WebGL network, which sits at z-1 above section backgrounds. */
 @utility page-container {
-  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  @apply relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
 }
 
 @utility bg-blueprint {
@@ -73,9 +74,27 @@ body {
   }
 }
 
-/* Scroll reveals start hidden, so printed pages must opt out. */
+/* Hidden in the server HTML until GSAP reveals it, so content can't flash first.
+   The failsafe shows everything if scripts never run, such as after a failed download. */
+.gsap-reveal {
+  opacity: 0;
+  animation: gsap-reveal-failsafe 0.4s 3s forwards;
+}
+
+.gsap-ready .gsap-reveal {
+  animation: none;
+}
+
+@keyframes gsap-reveal-failsafe {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Reveals start hidden, so printed pages must opt out. */
 @media print {
-  .reveal {
+  .reveal,
+  .gsap-reveal {
     opacity: 1 !important;
     transform: none !important;
   }

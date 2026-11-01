@@ -7,6 +7,7 @@ import Publications from "@/components/Publications";
 import ResearchInterests from "@/components/ResearchInterests";
 import Teaching from "@/components/Teaching";
 import Team from "@/components/Team";
+import WebGLBackground from "@/components/WebGLBackground";
 import {
   courses,
   footerLinks,
@@ -19,6 +20,10 @@ import {
 } from "@/data/professorData";
 
 export default function Home() {
+  const { name, title, university, labRole, headlineLead, headlineHighlight, tagline } =
+    professorProfile;
+  const { profileImage, stats } = professorProfile;
+
   return (
     <>
       <a
@@ -27,9 +32,22 @@ export default function Home() {
       >
         Skip to content
       </a>
+      <WebGLBackground />
       <Navbar name={professorProfile.name} lab={professorProfile.labName} links={navLinks} />
       <main id="main" className="flex-1">
-        <Hero profile={professorProfile} />
+        <Hero
+          profile={{
+            name,
+            title,
+            university,
+            labRole,
+            headlineLead,
+            headlineHighlight,
+            tagline,
+            profileImage,
+            stats,
+          }}
+        />
         <About profile={professorProfile} />
         <ResearchInterests interests={researchInterests} />
         <Publications
