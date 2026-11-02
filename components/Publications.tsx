@@ -18,7 +18,6 @@ import type { CSSProperties } from "react";
 import HorizontalTrack from "@/components/ui/HorizontalTrack";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
-import TiltCard from "@/components/ui/TiltCard";
 import type { Publication, PublicationType } from "@/data/professorData";
 import { SMOOTH_EASE, formatCount, prefersReducedMotion } from "@/utils/animations";
 import { springEase } from "@/utils/sectionMotion";
@@ -79,19 +78,6 @@ const typeLabels: Record<PublicationType, string> = {
 
 const modalActionClassName =
   "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors";
-
-// Plays on the tile inside each card, since the track owns the transform on the card.
-const tileFlight: gsap.TweenVars = {
-  opacity: 0,
-  scale: 0.8,
-  y: 60,
-  rotationX: -30,
-  transformPerspective: 1000,
-  duration: 0.8,
-  ease: springEase(0.72, 9),
-  stagger: 0.05,
-  clearProps: "opacity,transform",
-};
 
 function matchesQuery({ title, authors, tags, venue }: Publication, query: string): boolean {
   return [title, venue, ...authors, ...tags].join(" ").toLowerCase().includes(query);
@@ -354,7 +340,6 @@ export default function Publications({ publications, highlightAuthor }: Publicat
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [details, setDetails] = useState<OpenDetails | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
 
   const searched = useMemo(() => {
@@ -370,24 +355,8 @@ export default function Publications({ publications, highlightAuthor }: Publicat
     [searched, typeFilter],
   );
 
-  // A string, because a keystroke that keeps the same cards still builds a new array.
-  const cardsKey = visible.map(({ id }) => id).join();
-  const flownCards = useRef(cardsKey);
-
   const countFor = (value: TypeFilter) =>
     value === "all" ? searched.length : searched.filter(({ type }) => type === value).length;
-
-  useLayoutEffect(() => {
-    if (flownCards.current === cardsKey) return;
-    flownCards.current = cardsKey;
-    if (prefersReducedMotion()) return;
-
-    const context = gsap.context(() => {
-      gsap.from("[data-tile]", tileFlight);
-    }, carouselRef);
-
-    return () => context.revert();
-  }, [cardsKey]);
 
   // Pushes the stage back while a tile is out in front of it.
   useEffect(() => {
@@ -422,13 +391,15 @@ export default function Publications({ publications, highlightAuthor }: Publicat
         className="absolute inset-0 bg-blueprint mask-[linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]"
       />
 
-      <div ref={carouselRef} className="publication-carousel">
+      <div className="publication-carousel">
         <HorizontalTrack
           label="Selected publications"
           ghostText="Publications"
-          links={visible.length}
-          cardsKey={cardsKey}
+          cardCount={visible.length}
+          // A string, because a keystroke that keeps the same cards still builds a new array.
+          cardsKey={visible.map(({ id }) => id).join()}
           frameRef={frameRef}
+          stacked
           toolbar={
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div role="group" aria-label="Filter by publication type" className="flex flex-wrap gap-1.5">
@@ -445,8 +416,11 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                       }`}
                     >
                       {pressed && (
+                        // Not a shared layoutId: Framer measures that against the page, so
+                        // a filter restarting the scroll would fling the pill in from far off.
                         <motion.span
-                          layoutId="publication-filter-tab"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
                           transition={{ type: "spring", stiffness: 420, damping: 34 }}
                           className="absolute inset-0 rounded-full bg-white"
                         />
@@ -485,7 +459,7 @@ export default function Publications({ publications, highlightAuthor }: Publicat
             </div>
           }
         >
-          <div data-stop className="w-(--track-intro) shrink-0 snap-center">
+          <div data-stop className="pointer-events-auto w-(--track-intro) shrink-0 snap-center">
             <Reveal>
               <SectionHeading
                 id="publications-title"
@@ -506,40 +480,34 @@ export default function Publications({ publications, highlightAuthor }: Publicat
           </div>
 
           {visible.length > 0 ? (
-            // The padding gives the tiles' shadows room inside the clipped viewport.
-            <ol className="flex items-center gap-(--track-gap) py-10">
-              {visible.map((publication, index) => {
+            // The padding gives the tiles room for their shadows and float, since the viewport clips.
+            <ol className="flex items-center gap-(--track-gap) py-10 transform-3d">
+              {visible.map((publication) => {
                 const { id, title, authors, venue, year, type, award } = publication;
                 return (
                   <li
                     key={id}
                     data-stop
-                    className={`w-(--track-card) shrink-0 snap-center ${
-                      index % 2 === 0 ? "lg:mb-16" : "lg:mt-16"
-                    }`}
+                    className="flex w-(--track-card) shrink-0 snap-center justify-center transform-3d"
                   >
-                    <TiltCard>
-                      <article
-                        data-tile
-                        style={{ "--tile-glow": `${typeColors[type]}55` } as CSSProperties}
-                        className="glass-tile flex h-92 flex-col rounded-2xl p-6"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="flex flex-wrap items-center gap-2">
-                            <TypeBadge type={type} />
-                            {award && (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2.5 py-0.5 text-xs font-semibold text-amber-200">
-                                <Award aria-hidden="true" className="size-3.5" />
-                                Award
-                              </span>
-                            )}
-                          </p>
-                          <span aria-hidden="true" className="font-mono text-xs text-navy-300">
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
-                        </div>
+                    <article
+                      style={{ "--tile-glow": `${typeColors[type]}55` } as CSSProperties}
+                      className="glass-tile pointer-events-auto relative h-96 w-full shrink-0 overflow-hidden rounded-3xl lg:motion-safe:w-[min(38rem,calc(100vw-35rem))]"
+                    >
+                      <div aria-hidden="true" className="absolute inset-0 bg-navy-900" />
 
-                        <h3 className="mt-4 line-clamp-3 text-pretty font-display text-xl font-bold tracking-tight">
+                      <div className="relative flex h-full flex-col p-6 sm:p-8">
+                        <p className="flex flex-wrap items-center gap-2">
+                          <TypeBadge type={type} />
+                          {award && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2.5 py-0.5 text-xs font-semibold text-amber-200">
+                              <Award aria-hidden="true" className="size-3.5" />
+                              Award
+                            </span>
+                          )}
+                        </p>
+
+                        <h3 className="mt-4 line-clamp-3 text-pretty font-display text-2xl font-extrabold leading-tight tracking-tight">
                           {title}
                         </h3>
                         <p className="mt-3 line-clamp-2 text-sm leading-6 text-navy-200">
@@ -562,14 +530,14 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                           <Sparkles aria-hidden="true" className="size-4" />
                           View Details &amp; BibTeX
                         </button>
-                      </article>
-                    </TiltCard>
+                      </div>
+                    </article>
                   </li>
                 );
               })}
             </ol>
           ) : (
-            <div className="w-(--track-card) shrink-0 snap-center text-center">
+            <div className="pointer-events-auto w-(--track-card) shrink-0 snap-center text-center">
               <p className="font-semibold">No publications match your search.</p>
               <button
                 type="button"

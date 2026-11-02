@@ -18,7 +18,7 @@ export default function ResearchInterests({ interests }: ResearchInterestsProps)
         className="absolute inset-0 bg-blueprint mask-[linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]"
       />
 
-      <HorizontalTrack label="Research pillars" ghostText="Research" links={interests.length}>
+      <HorizontalTrack label="Research pillars" ghostText="Research" cardCount={interests.length}>
         <div data-stop className="w-(--track-intro) shrink-0 snap-center">
           <Reveal>
             <SectionHeading
