@@ -1,9 +1,9 @@
-import { Sparkles } from "lucide-react";
 import { cacheLife } from "next/cache";
-import type { NavLink, ProfessorProfile } from "@/data/professorData";
+import { lastUpdated } from "@/data/profile";
+import type { NavLink, Profile } from "@/data/profile";
 
 interface FooterProps {
-  profile: ProfessorProfile;
+  profile: Profile;
   links: NavLink[];
 }
 
@@ -16,14 +16,14 @@ async function CopyrightYear() {
 }
 
 export default function Footer({ profile, links }: FooterProps) {
-  const { labName, department, university, socials } = profile;
+  const { name, department, university, socials } = profile;
 
   return (
     <footer className="bg-navy-950 py-12 text-sm text-navy-300">
       <div className="page-container">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.5fr]">
           <div className="sm:col-span-2 lg:col-span-1">
-            <p className="font-display text-lg font-bold text-white">{labName}</p>
+            <p className="font-display text-lg font-bold text-white">{name}</p>
             <p className="mt-1 max-w-sm leading-6">
               {department}, {university}
             </p>
@@ -62,13 +62,11 @@ export default function Footer({ profile, links }: FooterProps) {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 lg:flex-row lg:items-center lg:justify-between">
+          <p>Personal academic website. Not an official Monash University page.</p>
           <p>
-            © <CopyrightYear /> {university}. All rights reserved.
-          </p>
-          <p className="inline-flex items-center gap-1.5 self-start rounded-full border border-white/10 px-3 py-1 text-xs text-navy-300 lg:self-auto">
-            <Sparkles aria-hidden="true" className="size-3.5 shrink-0 text-accent-400" />
-            Designed &amp; Optimized for Academic Excellence
+            © <CopyrightYear /> {name}. Last updated{" "}
+            <time dateTime={lastUpdated.iso}>{lastUpdated.label}</time>.
           </p>
         </div>
       </div>

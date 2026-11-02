@@ -22,9 +22,8 @@ const sectionScenes: Record<string, SectionScene> = {
   top: { opacity: "0.35", spin: 0.03, color: 0x34d399 },
   about: { opacity: "0.2", spin: 0.012, color: 0x10b981 },
   research: { opacity: "0.38", spin: 0.09, color: 0x6ee7b7 },
+  supervision: { opacity: "0.1", spin: 0.02, color: 0x10b981 },
   publications: { opacity: "0.15", spin: 0.012, color: 0x38bdf8 },
-  team: { opacity: "0.1", spin: 0.02, color: 0x10b981 },
-  teaching: { opacity: "0.22", spin: 0.05, color: 0x2dd4bf },
   contact: { opacity: "0.06", spin: 0.01, color: 0x10b981 },
 };
 

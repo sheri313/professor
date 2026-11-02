@@ -4,15 +4,15 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-
 import { Menu, Moon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Avatar from "@/components/ui/Avatar";
-import type { NavLink } from "@/data/professorData";
+import type { NavLink } from "@/data/profile";
 
 interface NavbarProps {
   name: string;
-  lab: string;
+  subtitle: string;
   links: NavLink[];
 }
 
-export default function Navbar({ name, lab, links }: NavbarProps) {
+export default function Navbar({ name, subtitle, links }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeHref, setActiveHref] = useState<string | null>(null);
@@ -62,7 +62,7 @@ export default function Navbar({ name, lab, links }: NavbarProps) {
               {name}
             </span>
             <span className={`block text-xs ${solid ? "text-navy-600" : "text-navy-300"}`}>
-              {lab}
+              {subtitle}
             </span>
           </span>
         </a>

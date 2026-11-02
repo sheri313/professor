@@ -1,0 +1,274 @@
+{
+  "meta": {
+    "lastUpdated": "2026-11-02",
+    "status": "Pending review by Dr Mitchell. Do not deploy until approved.",
+    "note": "Facts come from the Monash profile and the pages it links to, plus Crossref metadata for DOIs and BibTeX. Wording under biography, supervision, and research is verbatim from the profile. Do not paraphrase it."
+  },
+  "todo": [
+    "publications: only 5 of the 40 research outputs are listed. The full list at the outputs source URL could not be read by automated tools, so the other 35 need adding by hand.",
+    "person.photo: null, so the site shows an initials placeholder. public/images/eleanor-mitchell.jpg is not used until its source and reuse permission are confirmed.",
+    "person.email: confirm this address may be shown in plain text. The Monash profile obscures it from scrapers.",
+    "Site URL: not found in the repo. Once known, add metadataBase and openGraph.url in app/layout.tsx and url in personJsonLd.",
+    "Not available from any permitted source, so left out: qualifications, employment history, total citations, h-index, teaching, talks, awards, students, office location, phone."
+  ],
+  "person": {
+    "name": "Eleanor Mitchell",
+    "honorific": "Dr",
+    "position": "Lecturer",
+    "school": "School of Rural Health",
+    "university": "Monash University",
+    "citationNames": [
+      "Mitchell, E.",
+      "Mitchell, E. K. L."
+    ],
+    "email": "eleanor.mitchell@monash.edu",
+    "photo": null,
+    "links": {
+      "monash": "https://research.monash.edu/en/persons/eleanor-mitchell/",
+      "orcid": "https://orcid.org/0000-0002-7360-6295",
+      "scopus": "https://www.scopus.com/authid/detail.uri?authorId=7201803866"
+    },
+    "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+  },
+  "positions": [
+    {
+      "title": "Lecturer",
+      "organisation": "School of Rural Health, Monash University",
+      "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+    }
+  ],
+  "biography": {
+    "paragraphs": [
+      "Eleanor is currently involved in several health education and rural health workforce research projects, as well as, many community-based, primary health care and clinical research projects."
+    ],
+    "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+  },
+  "supervision": {
+    "status": "Accepting PhD Students",
+    "statement": "Eleanor is interested in supervising honours, masters and PhD students on topics relating to the above fields and how they compare, relate and impact on rural communities.",
+    "levels": [
+      "Honours",
+      "Masters",
+      "PhD"
+    ],
+    "phdProjectsUrl": "https://www.monash.edu/medicine/research/supervisorconnect",
+    "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+  },
+  "research": {
+    "interests": [
+      {
+        "id": "rural-indigenous-health",
+        "text": "Rural and Indigenous Health, including Rural Health Services and Workforce issues"
+      },
+      {
+        "id": "primary-population-health",
+        "text": "Primary Health Care and Population Health particularly 'Healthy start to life' and 'Ageing well' 'Ageing productively'."
+      },
+      {
+        "id": "program-evaluation",
+        "text": "Community Health Program Evaluations"
+      },
+      {
+        "id": "health-education",
+        "text": "Health Education and training research."
+      }
+    ],
+    "keywords": [
+      "Health Services",
+      "Rural Health",
+      "Primary Health Care",
+      "General Practice",
+      "Maternal and Child Health",
+      "Aged Care",
+      "Health workforce development especially in rural areas",
+      "Health workforce",
+      "Work integrated learning",
+      "clinical teaching",
+      "Rural Education",
+      "Health Literacy",
+      "Pregnancy",
+      "Early Childhood",
+      "Mental Health Services research"
+    ],
+    "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+  },
+  "projects": {
+    "active": 2,
+    "finished": 8,
+    "allProjectsUrl": "https://research.monash.edu/en/persons/eleanor-mitchell/projects/",
+    "items": [
+      {
+        "title": "Developing Training Capacity & Promoting End-to-End Rural Generalist Pathways in East Gippsland",
+        "role": "Associate Investigator",
+        "period": "13 April 2026 to 1 February 2027",
+        "status": "Active"
+      },
+      {
+        "title": "Health Evaluation - Fetal Alcohol Spectrum Disorder Services",
+        "role": "Chief Investigator",
+        "period": "8 November 2022 to 30 June 2028",
+        "status": "Active"
+      },
+      {
+        "title": "Gippsland PHN HeadtoHelp Hub and Satellite Model Evaluation",
+        "role": "Chief Investigator",
+        "period": "1 June 2021 to 30 June 2022",
+        "status": "Finished"
+      },
+      {
+        "title": "Understanding older person health assessments",
+        "role": "Primary Chief Investigator",
+        "period": "1 June 2021 to 28 February 2022",
+        "status": "Finished"
+      },
+      {
+        "title": "Maternal and child health nurse and practitioner perceptions of the mental health impact of disasters on women in the perinatal period.",
+        "role": "Chief Investigator",
+        "period": "1 April 2021 to 31 December 2021",
+        "status": "Finished"
+      }
+    ],
+    "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+  },
+  "researchOutputs": {
+    "allOutputsUrl": "https://research.monash.edu/en/persons/eleanor-mitchell/publications/",
+    "byType": [
+      {
+        "label": "Article",
+        "count": 31
+      },
+      {
+        "label": "Abstract",
+        "count": 3
+      },
+      {
+        "label": "Letter",
+        "count": 2
+      },
+      {
+        "label": "Other Report",
+        "count": 1
+      },
+      {
+        "label": "Conference Paper",
+        "count": 1
+      },
+      {
+        "label": "Comment / Debate",
+        "count": 1
+      },
+      {
+        "label": "Review Article",
+        "count": 1
+      }
+    ],
+    "source": "https://research.monash.edu/en/persons/eleanor-mitchell/"
+  },
+  "publications": [
+    {
+      "id": "mcardle-2025-climate-disasters",
+      "doi": "10.1080/10376178.2025.2459703",
+      "title": "Climate-fuelled disasters and perinatal health: the catch 22 when undertaking research within an under-resourced health sector",
+      "authors": [
+        "McArdle, A.",
+        "Willems, J.",
+        "Mitchell, E.",
+        "Hine, R."
+      ],
+      "venue": "Contemporary Nurse",
+      "details": "Vol. 61, no. 2, pp. 144-160",
+      "year": 2025,
+      "scopusCitations": 2,
+      "url": "https://research.monash.edu/en/publications/climate-fuelled-disasters-and-perinatal-health-the-catch-22-when-/",
+      "type": "article",
+      "bibtex": "@article{mcardle2025climate,\n  title   = {Climate-fuelled disasters and perinatal health: the catch 22 when undertaking research within an under-resourced health sector},\n  author  = {McArdle, Adelle and Willems, Julie and Mitchell, Eleanor and Hine, Rochelle},\n  journal = {Contemporary Nurse},\n  year    = {2025},\n  volume  = {61},\n  number  = {2},\n  pages   = {144--160},\n  doi     = {10.1080/10376178.2025.2459703},\n  url     = {https://doi.org/10.1080/10376178.2025.2459703}\n}",
+      "source": "https://research.monash.edu/en/publications/climate-fuelled-disasters-and-perinatal-health-the-catch-22-when-/",
+      "metadataSource": "https://api.crossref.org/works/10.1080/10376178.2025.2459703"
+    },
+    {
+      "id": "fisher-2024-rural-urban-practice",
+      "doi": "10.1111/ajr.13069",
+      "title": "Factors influencing nursing and allied health recent graduates' rural versus urban preferred principal place of practice: A cross-sectional data linkage study",
+      "authors": [
+        "Fisher, K.",
+        "Depczynski, J.",
+        "Mitchell, E.",
+        "Smith, A."
+      ],
+      "venue": "Australian Journal of Rural Health",
+      "details": "Vol. 32, no. 1, pp. 117-128",
+      "year": 2024,
+      "scopusCitations": 10,
+      "url": "https://research.monash.edu/en/publications/factors-influencing-nursing-and-allied-health-recent-graduates-ru/",
+      "type": "article",
+      "bibtex": "@article{fisher2024factors,\n  title   = {Factors influencing nursing and allied health recent graduates' rural versus urban preferred principal place of practice: A cross-sectional data linkage study},\n  author  = {Fisher, Karin and Depczynski, Julie and Mitchell, Eleanor and Smith, Anthony},\n  journal = {Australian Journal of Rural Health},\n  year    = {2024},\n  volume  = {32},\n  number  = {1},\n  pages   = {117--128},\n  doi     = {10.1111/ajr.13069},\n  url     = {https://doi.org/10.1111/ajr.13069}\n}",
+      "source": "https://research.monash.edu/en/publications/factors-influencing-nursing-and-allied-health-recent-graduates-ru/",
+      "metadataSource": "https://api.crossref.org/works/10.1111/ajr.13069"
+    },
+    {
+      "id": "isaacs-2024-integrated-care",
+      "doi": "10.1186/s13033-024-00625-x",
+      "title": "Mental health integrated care models in primary care and factors that contribute to their effective implementation: a scoping review",
+      "authors": [
+        "Isaacs, A. N.",
+        "Mitchell, E. K. L."
+      ],
+      "venue": "International Journal of Mental Health Systems",
+      "details": "Vol. 18, no. 1, article 5",
+      "year": 2024,
+      "scopusCitations": 44,
+      "url": "https://research.monash.edu/en/publications/mental-health-integrated-care-models-in-primary-care-and-factors-/",
+      "type": "article",
+      "bibtex": "@article{isaacs2024mental,\n  title   = {Mental health integrated care models in primary care and factors that contribute to their effective implementation: a scoping review},\n  author  = {Isaacs, Anton N. and Mitchell, Eleanor K. L.},\n  journal = {International Journal of Mental Health Systems},\n  year    = {2024},\n  volume  = {18},\n  number  = {1},\n  pages   = {5},\n  doi     = {10.1186/s13033-024-00625-x},\n  url     = {https://doi.org/10.1186/s13033-024-00625-x}\n}",
+      "source": "https://research.monash.edu/en/publications/mental-health-integrated-care-models-in-primary-care-and-factors-/",
+      "metadataSource": "https://api.crossref.org/works/10.1186/s13033-024-00625-x"
+    },
+    {
+      "id": "hine-2024-natural-disasters",
+      "doi": "10.1007/s10389-023-01855-y",
+      "title": "Natural disasters and perinatal mental health: what are the impacts on perinatal women and the service system?",
+      "authors": [
+        "Hine, R. H.",
+        "Mitchell, E. K. L.",
+        "Whitehead-Annett, L.",
+        "Duncan, Z.",
+        "McArdle, A."
+      ],
+      "venue": "Journal of Public Health",
+      "details": "Vol. 32, no. 5, pp. 805-812",
+      "year": 2024,
+      "scopusCitations": 8,
+      "url": "https://research.monash.edu/en/publications/natural-disasters-and-perinatal-mental-health-what-are-the-impact/",
+      "type": "article",
+      "bibtex": "@article{hine2024natural,\n  title   = {Natural disasters and perinatal mental health: what are the impacts on perinatal women and the service system?},\n  author  = {Hine, Rochelle Helena and Mitchell, Eleanor and Whitehead-Annett, Lara and Duncan, Zoe and McArdle, Adelle},\n  journal = {Journal of Public Health},\n  year    = {2024},\n  volume  = {32},\n  number  = {5},\n  pages   = {805--812},\n  doi     = {10.1007/s10389-023-01855-y},\n  url     = {https://doi.org/10.1007/s10389-023-01855-y}\n}",
+      "source": "https://research.monash.edu/en/publications/natural-disasters-and-perinatal-mental-health-what-are-the-impact/",
+      "metadataSource": "https://api.crossref.org/works/10.1007/s10389-023-01855-y"
+    },
+    {
+      "id": "hine-2024-recovery-oriented",
+      "doi": "10.1080/0312407x.2023.2267037",
+      "title": "Service Users’ Descriptions of Recovery-Oriented Elements of a Rural Mental Health Service",
+      "authors": [
+        "Hine, R.",
+        "Mitchell, E.",
+        "Naughton, M.",
+        "Craig, L.",
+        "Azar, D.",
+        "O’Regan, M.",
+        "Isaacs, A.",
+        "Bullock, S.",
+        "Sutton, K.",
+        "Maybery, D."
+      ],
+      "venue": "Australian Social Work",
+      "details": "Vol. 77, no. 2, pp. 196-213",
+      "year": 2024,
+      "scopusCitations": 3,
+      "url": "https://research.monash.edu/en/publications/service-users-descriptions-of-recovery-oriented-elements-of-a-rur/",
+      "type": "article",
+      "bibtex": "@article{hine2024service,\n  title   = {Service Users' Descriptions of Recovery-Oriented Elements of a Rural Mental Health Service},\n  author  = {Hine, Rochelle and Mitchell, Eleanor and Naughton, Michael and Craig, Liz and Azar, Denise and O'Regan, Michaela and Isaacs, Anton and Bullock, Shane and Sutton, Keith and Maybery, Darryl},\n  journal = {Australian Social Work},\n  year    = {2024},\n  volume  = {77},\n  number  = {2},\n  pages   = {196--213},\n  doi     = {10.1080/0312407x.2023.2267037},\n  url     = {https://doi.org/10.1080/0312407x.2023.2267037}\n}",
+      "source": "https://research.monash.edu/en/publications/service-users-descriptions-of-recovery-oriented-elements-of-a-rur/",
+      "metadataSource": "https://api.crossref.org/works/10.1080/0312407x.2023.2267037"
+    }
+  ]
+}

@@ -1,33 +1,33 @@
-import { Mail, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 import Image from "next/image";
 import Avatar from "@/components/ui/Avatar";
 import ContactForm from "@/components/ui/ContactForm";
 import PostcardFlip from "@/components/ui/PostcardFlip";
 import Reveal from "@/components/ui/Reveal";
-import type { ProfessorProfile } from "@/data/professorData";
+import type { Profile } from "@/data/profile";
 
 interface ContactProps {
-  profile: ProfessorProfile;
+  profile: Profile;
 }
 
 interface PostcardFrontProps {
-  labName: string;
+  name: string;
   university: string;
 }
 
 const addressLineClassName = "border-b border-navy-200 py-1.5";
 
-function PostcardFront({ labName, university }: PostcardFrontProps) {
+function PostcardFront({ name, university }: PostcardFrontProps) {
   return (
     // Top-aligned below lg, where the card is taller than the screen.
     <div className="relative flex size-full flex-col items-center overflow-hidden rounded-2xl bg-accent-900 px-6 pb-8 pt-20 text-center text-white shadow-[0_48px_90px_-40px_rgb(12_20_35/0.55)] lg:justify-center lg:pt-8">
       <div className="postcard-rays absolute inset-0" />
 
       <p className="relative font-serif text-4xl italic text-accent-100 sm:text-6xl">
-        Greetings from the
+        Greetings from
       </p>
       <p className="relative mt-3 max-w-5xl font-display text-[clamp(2.75rem,7.5vw,6.25rem)] font-extrabold uppercase leading-[0.98] tracking-tight [text-shadow:0.05em_0.05em_0_var(--color-accent-600)]">
-        {labName}
+        {name}
       </p>
       <p className="relative mt-6 font-mono text-xs uppercase tracking-[0.3em] text-accent-200">
         {university}
@@ -40,8 +40,7 @@ function PostcardFront({ labName, university }: PostcardFrontProps) {
 }
 
 export default function Contact({ profile }: ContactProps) {
-  const { name, email, phone, department, university, contactNote } = profile;
-  const { officeLocation, officeAddress, labName, profileImage } = profile;
+  const { name, email, department, university, contactNote, profileImage } = profile;
 
   return (
     <section id="contact" className="relative overflow-x-clip bg-paper-100 py-20 lg:py-24">
@@ -59,12 +58,12 @@ export default function Contact({ profile }: ContactProps) {
         </Reveal>
 
         <div className="mt-10 lg:mt-12">
-          <PostcardFlip front={<PostcardFront labName={labName} university={university} />}>
+          <PostcardFlip front={<PostcardFront name={name} university={university} />}>
             <ContactForm
               recipient={email}
               recipientName={name}
               postmarkTop={university}
-              postmarkBottom={labName}
+              postmarkBottom={department}
             >
               <div className="flex justify-end">
                 <div className="drop-shadow-md">
@@ -97,36 +96,19 @@ export default function Contact({ profile }: ContactProps) {
                   <li className={`${addressLineClassName} font-serif text-2xl text-navy-900`}>
                     {name}
                   </li>
-                  <li className={`${addressLineClassName} text-sm font-medium`}>{officeLocation}</li>
                   <li className={`${addressLineClassName} text-sm leading-6`}>{department}</li>
                   <li className={`${addressLineClassName} text-sm`}>{university}</li>
-                  {officeAddress.map((line) => (
-                    <li key={line} className={`${addressLineClassName} text-sm`}>
-                      {line}
-                    </li>
-                  ))}
                 </ul>
 
-                <ul className="mt-5 space-y-1.5 text-sm font-medium text-navy-900">
-                  <li>
-                    <a
-                      href={`mailto:${email}`}
-                      className="inline-flex items-center gap-2 wrap-anywhere transition-colors hover:text-accent-700"
-                    >
-                      <Mail aria-hidden="true" className="size-4 shrink-0 text-accent-700" />
-                      {email}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href={`tel:${phone.replace(/[^+\d]/g, "")}`}
-                      className="inline-flex items-center gap-2 transition-colors hover:text-accent-700"
-                    >
-                      <Phone aria-hidden="true" className="size-4 shrink-0 text-accent-700" />
-                      {phone}
-                    </a>
-                  </li>
-                </ul>
+                <p className="mt-5 text-sm font-medium text-navy-900">
+                  <a
+                    href={`mailto:${email}`}
+                    className="inline-flex items-center gap-2 wrap-anywhere transition-colors hover:text-accent-700"
+                  >
+                    <Mail aria-hidden="true" className="size-4 shrink-0 text-accent-700" />
+                    {email}
+                  </a>
+                </p>
               </address>
             </ContactForm>
           </PostcardFlip>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import MotionProvider from "@/components/ui/MotionProvider";
-import { professorProfile } from "@/data/professorData";
+import { personJsonLd, profile } from "@/data/profile";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,13 +29,20 @@ const instrumentSerif = Instrument_Serif({
   preload: false,
 });
 
+const siteTitle = `${profile.name} | ${profile.title}`;
+
 export const metadata: Metadata = {
-  title: `${professorProfile.name} | ${professorProfile.labName}`,
-  description: professorProfile.shortBio,
+  title: siteTitle,
+  description: profile.shortBio,
   openGraph: {
-    title: `${professorProfile.name} | ${professorProfile.labName}`,
-    description: professorProfile.shortBio,
-    type: "website",
+    title: siteTitle,
+    description: profile.shortBio,
+    type: "profile",
+  },
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: profile.shortBio,
   },
 };
 
@@ -49,11 +56,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <noscript>
           <style>
-            {".gsap-reveal{opacity:1!important;transform:none!important}header.fixed{position:absolute!important}.track-stage{height:auto!important}.publication-carousel{display:none!important}.member-panel{visibility:visible!important;opacity:1!important;translate:none!important;grid-row:auto!important;margin-bottom:2rem}"}
+            {".gsap-reveal{opacity:1!important;transform:none!important}header.fixed{position:absolute!important}.track-stage{height:auto!important}.publication-carousel{display:none!important}"}
           </style>
         </noscript>
       </head>
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

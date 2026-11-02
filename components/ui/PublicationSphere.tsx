@@ -15,7 +15,7 @@ import {
   Vector3,
 } from "three";
 import type { Group, MeshBasicMaterial, Points, ShaderMaterial, SpriteMaterial } from "three";
-import type { Publication, PublicationType } from "@/data/professorData";
+import type { Publication, PublicationType } from "@/data/profile";
 import { prefersReducedMotion } from "@/utils/animations";
 
 export interface ScrollSpin {

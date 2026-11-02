@@ -3,11 +3,9 @@
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import {
-  Award,
   Check,
   Copy,
   ExternalLink,
-  FileText,
   Search,
   Sparkles,
   TriangleAlert,
@@ -18,18 +16,19 @@ import type { CSSProperties } from "react";
 import HorizontalTrack from "@/components/ui/HorizontalTrack";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
-import type { Publication, PublicationType } from "@/data/professorData";
+import type { Publication, PublicationType, ResearchOutputSummary } from "@/data/profile";
 import { SMOOTH_EASE, formatCount, prefersReducedMotion } from "@/utils/animations";
 import { springEase } from "@/utils/sectionMotion";
 
 interface PublicationsProps {
   publications: Publication[];
-  highlightAuthor: string;
+  highlightAuthors: string[];
+  outputs: ResearchOutputSummary;
 }
 
 interface AuthorListProps {
   authors: string[];
-  highlightAuthor: string;
+  highlightAuthors: string[];
   highlightClassName: string;
 }
 
@@ -39,7 +38,7 @@ interface TypeBadgeProps {
 
 interface PublicationModalProps {
   publication: Publication;
-  highlightAuthor: string;
+  highlightAuthors: string[];
   origin: DOMRect;
   onClose: () => void;
 }
@@ -59,35 +58,51 @@ interface FilterTab {
 
 const filterTabs: FilterTab[] = [
   { value: "all", label: "All" },
-  { value: "journal", label: "Journals" },
-  { value: "conference", label: "Conferences" },
-  { value: "patent", label: "Patents" },
+  { value: "article", label: "Articles" },
+  { value: "review", label: "Review articles" },
+  { value: "letter", label: "Letters" },
+  { value: "comment", label: "Comment / debate" },
+  { value: "conference", label: "Conference papers" },
+  { value: "abstract", label: "Abstracts" },
+  { value: "report", label: "Reports" },
 ];
 
 const typeColors: Record<PublicationType, string> = {
-  journal: "#10b981",
+  article: "#10b981",
+  review: "#2dd4bf",
+  letter: "#a78bfa",
+  comment: "#f472b6",
   conference: "#0ea5e9",
-  patent: "#f59e0b",
+  abstract: "#f59e0b",
+  report: "#94a3b8",
 };
 
 const typeLabels: Record<PublicationType, string> = {
-  journal: "Journal",
-  conference: "Conference",
-  patent: "Patent",
+  article: "Article",
+  review: "Review article",
+  letter: "Letter",
+  comment: "Comment / debate",
+  conference: "Conference paper",
+  abstract: "Abstract",
+  report: "Report",
 };
 
 const modalActionClassName =
   "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors";
 
-function matchesQuery({ title, authors, tags, venue }: Publication, query: string): boolean {
-  return [title, venue, ...authors, ...tags].join(" ").toLowerCase().includes(query);
+function matchesQuery({ title, authors, venue }: Publication, query: string): boolean {
+  return [title, venue, ...authors].join(" ").toLowerCase().includes(query);
 }
 
-function AuthorList({ authors, highlightAuthor, highlightClassName }: AuthorListProps) {
+function AuthorList({ authors, highlightAuthors, highlightClassName }: AuthorListProps) {
   return authors.map((author, index) => (
     <Fragment key={author}>
       {index > 0 && ", "}
-      {author === highlightAuthor ? <strong className={highlightClassName}>{author}</strong> : author}
+      {highlightAuthors.includes(author) ? (
+        <strong className={highlightClassName}>{author}</strong>
+      ) : (
+        author
+      )}
     </Fragment>
   ));
 }
@@ -119,9 +134,8 @@ function getOriginOffset(panel: HTMLElement, origin: DOMRect): gsap.TweenVars {
   };
 }
 
-function PublicationModal({ publication, highlightAuthor, origin, onClose }: PublicationModalProps) {
-  const { title, authors, venue, year, type, doi, pdfUrl, abstract, award, citations, bibtex } =
-    publication;
+function PublicationModal({ publication, highlightAuthors, origin, onClose }: PublicationModalProps) {
+  const { title, authors, venue, details, year, type, doi, scopusCitations, bibtex } = publication;
   const [status, setStatus] = useState<CopyStatus>("idle");
   const dialogRef = useRef<HTMLDialogElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -258,7 +272,9 @@ function PublicationModal({ publication, highlightAuthor, origin, onClose }: Pub
         <p data-detail className="flex flex-wrap items-center gap-x-3 gap-y-1 pr-10 font-mono text-xs text-navy-200">
           <TypeBadge type={type} />
           <span>{year}</span>
-          <span>{formatCount(citations)} citations</span>
+          <span>
+            {formatCount(scopusCitations)} {scopusCitations === 1 ? "citation" : "citations"} (Scopus)
+          </span>
         </p>
 
         <h3
@@ -269,30 +285,18 @@ function PublicationModal({ publication, highlightAuthor, origin, onClose }: Pub
           {title}
         </h3>
 
-        {award && (
-          <p
-            data-detail
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 px-3 py-1 text-xs font-semibold text-amber-200"
-          >
-            <Award aria-hidden="true" className="size-3.5" />
-            {award}
-          </p>
-        )}
-
         <div data-detail>
           <p className="mt-3 text-navy-100">
             <AuthorList
               authors={authors}
-              highlightAuthor={highlightAuthor}
+              highlightAuthors={highlightAuthors}
               highlightClassName="font-semibold text-accent-300"
             />
           </p>
-          <p className="mt-1 text-sm italic text-navy-200">{venue}</p>
+          <p className="mt-1 text-sm text-navy-200">
+            <span className="italic">{venue}</span>. {details}.
+          </p>
         </div>
-
-        <p data-detail className="mt-5 border-t border-white/10 pt-5 leading-7 text-navy-100">
-          {abstract}
-        </p>
 
         <div data-detail className="mt-6 flex flex-wrap gap-2">
           {doi && (
@@ -304,17 +308,6 @@ function PublicationModal({ publication, highlightAuthor, origin, onClose }: Pub
             >
               <ExternalLink aria-hidden="true" className="size-4" />
               View DOI
-            </a>
-          )}
-          {pdfUrl && (
-            <a
-              href={pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${modalActionClassName} border border-white/20 hover:bg-white/10`}
-            >
-              <FileText aria-hidden="true" className="size-4" />
-              PDF
             </a>
           )}
           <button
@@ -336,7 +329,11 @@ function PublicationModal({ publication, highlightAuthor, origin, onClose }: Pub
   );
 }
 
-export default function Publications({ publications, highlightAuthor }: PublicationsProps) {
+export default function Publications({
+  publications,
+  highlightAuthors,
+  outputs,
+}: PublicationsProps) {
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [details, setDetails] = useState<OpenDetails | null>(null);
@@ -347,7 +344,9 @@ export default function Publications({ publications, highlightAuthor }: Publicat
     const matching = normalizedQuery
       ? publications.filter((publication) => matchesQuery(publication, normalizedQuery))
       : publications;
-    return [...matching].sort((a, b) => b.year - a.year || b.citations - a.citations);
+    return [...matching].sort(
+      (a, b) => b.year - a.year || b.scopusCitations - a.scopusCitations,
+    );
   }, [publications, query]);
 
   const visible = useMemo(
@@ -357,6 +356,11 @@ export default function Publications({ publications, highlightAuthor }: Publicat
 
   const countFor = (value: TypeFilter) =>
     value === "all" ? searched.length : searched.filter(({ type }) => type === value).length;
+
+  // Only types on the page get a tab, and a single type leaves nothing to filter.
+  const tabs = filterTabs.filter(
+    ({ value }) => value === "all" || publications.some(({ type }) => type === value),
+  );
 
   // Pushes the stage back while a tile is out in front of it.
   useEffect(() => {
@@ -402,46 +406,48 @@ export default function Publications({ publications, highlightAuthor }: Publicat
           stacked
           toolbar={
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div role="group" aria-label="Filter by publication type" className="flex flex-wrap gap-1.5">
-                {filterTabs.map(({ value, label }) => {
-                  const pressed = typeFilter === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-pressed={pressed}
-                      onClick={() => setTypeFilter(value)}
-                      className={`relative flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
-                        pressed ? "text-navy-950" : "text-navy-200 hover:text-white"
-                      }`}
-                    >
-                      {pressed && (
-                        // Not a shared layoutId: Framer measures that against the page, so
-                        // a filter restarting the scroll would fling the pill in from far off.
-                        <motion.span
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                          className="absolute inset-0 rounded-full bg-white"
-                        />
-                      )}
-                      {value !== "all" && (
-                        <span
-                          aria-hidden="true"
-                          style={{ backgroundColor: typeColors[value] }}
-                          className="relative size-2 rounded-full"
-                        />
-                      )}
-                      <span className="relative">{label}</span>
-                      <span className="relative font-mono text-xs opacity-70">{countFor(value)}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              {tabs.length > 2 && (
+                <div role="group" aria-label="Filter by publication type" className="flex flex-wrap gap-1.5">
+                  {tabs.map(({ value, label }) => {
+                    const pressed = typeFilter === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        aria-pressed={pressed}
+                        onClick={() => setTypeFilter(value)}
+                        className={`relative flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                          pressed ? "text-navy-950" : "text-navy-200 hover:text-white"
+                        }`}
+                      >
+                        {pressed && (
+                          // Not a shared layoutId: Framer measures that against the page, so
+                          // a filter restarting the scroll would fling the pill in from far off.
+                          <motion.span
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                            className="absolute inset-0 rounded-full bg-white"
+                          />
+                        )}
+                        {value !== "all" && (
+                          <span
+                            aria-hidden="true"
+                            style={{ backgroundColor: typeColors[value] }}
+                            className="relative size-2 rounded-full"
+                          />
+                        )}
+                        <span className="relative">{label}</span>
+                        <span className="relative font-mono text-xs opacity-70">{countFor(value)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
-              <div className="relative w-full lg:max-w-xs">
+              <div className="relative w-full lg:ml-auto lg:max-w-xs">
                 <label htmlFor="publication-search" className="sr-only">
-                  Search publications by title, venue, keyword, or author
+                  Search publications by title, venue, or author
                 </label>
                 <Search
                   aria-hidden="true"
@@ -465,9 +471,18 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                 id="publications-title"
                 eyebrow="Publications"
                 title="Selected publications"
-                description="Newest first, across journals, conferences, and patents. Each one opens to its full abstract and a ready-to-copy BibTeX citation."
+                description={`${publications.length} of the ${outputs.total} research outputs listed on the Monash University research profile, newest first. Each one opens to a ready-to-copy BibTeX citation.`}
                 tone="dark"
               />
+              <a
+                href={outputs.allOutputsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-accent-300 transition-colors hover:text-accent-200"
+              >
+                View all {outputs.total} research outputs
+                <ExternalLink aria-hidden="true" className="size-4" />
+              </a>
               {visible.length > 1 && (
                 <p className="mt-6 font-mono text-xs text-accent-300">
                   <span className="lg:hidden">Swipe through the {visible.length} publications</span>
@@ -483,7 +498,7 @@ export default function Publications({ publications, highlightAuthor }: Publicat
             // The padding gives the tiles room for their shadows and float, since the viewport clips.
             <ol className="flex items-center gap-(--track-gap) py-10 transform-3d">
               {visible.map((publication) => {
-                const { id, title, authors, venue, year, type, award } = publication;
+                const { id, title, authors, venue, year, type } = publication;
                 return (
                   <li
                     key={id}
@@ -497,14 +512,8 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                       <div aria-hidden="true" className="absolute inset-0 bg-navy-900" />
 
                       <div className="relative flex h-full flex-col p-6 sm:p-8">
-                        <p className="flex flex-wrap items-center gap-2">
+                        <p>
                           <TypeBadge type={type} />
-                          {award && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-2.5 py-0.5 text-xs font-semibold text-amber-200">
-                              <Award aria-hidden="true" className="size-3.5" />
-                              Award
-                            </span>
-                          )}
                         </p>
 
                         <h3 className="mt-4 line-clamp-3 text-pretty font-display text-2xl font-extrabold leading-tight tracking-tight">
@@ -513,7 +522,7 @@ export default function Publications({ publications, highlightAuthor }: Publicat
                         <p className="mt-3 line-clamp-2 text-sm leading-6 text-navy-200">
                           <AuthorList
                             authors={authors}
-                            highlightAuthor={highlightAuthor}
+                            highlightAuthors={highlightAuthors}
                             highlightClassName="font-bold text-white"
                           />
                         </p>
@@ -557,19 +566,17 @@ export default function Publications({ publications, highlightAuthor }: Publicat
           : "No publications match your search."}
       </p>
 
-      {/* The modal is the only place abstracts appear, so this stands in for the track to
-          keep every one of them readable and indexable without JavaScript. */}
+      {/* The track needs JavaScript, so this keeps the list readable without it. */}
       <noscript>
         <div className="page-container-wide py-20">
           <SectionHeading eyebrow="Publications" title="Selected publications" tone="dark" />
           <ul className="mt-10 max-w-3xl space-y-6">
-            {searched.map(({ id, title, authors, venue, year, abstract }) => (
+            {searched.map(({ id, title, authors, venue, details, year }) => (
               <li key={id}>
                 <h3 className="font-display text-lg font-bold">{title}</h3>
                 <p className="text-sm text-navy-200">
-                  {authors.join(", ")}. {venue}, {year}.
+                  {authors.join(", ")}. {venue}, {year}. {details}.
                 </p>
-                <p className="mt-1 text-sm leading-6 text-navy-200">{abstract}</p>
               </li>
             ))}
           </ul>
@@ -580,7 +587,7 @@ export default function Publications({ publications, highlightAuthor }: Publicat
         <PublicationModal
           key={details.publication.id}
           publication={details.publication}
-          highlightAuthor={highlightAuthor}
+          highlightAuthors={highlightAuthors}
           origin={details.origin}
           onClose={() => setDetails(null)}
         />

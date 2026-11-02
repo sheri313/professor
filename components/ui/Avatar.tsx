@@ -7,8 +7,8 @@ interface AvatarProps {
   className?: string;
 }
 
-export function getInitials(name: string): string {
-  const parts = name.replace(/^Dr\.\s*/, "").split(/\s+/);
+function getInitials(name: string): string {
+  const parts = name.replace(/^Dr\.?\s+/, "").split(/\s+/);
   const first = parts[0] ?? "";
   const last = parts.length > 1 ? parts[parts.length - 1] : "";
   return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();

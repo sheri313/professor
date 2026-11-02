@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Fragment, useLayoutEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 import Avatar from "@/components/ui/Avatar";
-import type { HeroProfile, Stat } from "@/data/professorData";
+import type { HeroProfile, Stat } from "@/data/profile";
 import {
   SMOOTH_EASE,
   cardPointerEffect,
@@ -70,7 +70,7 @@ function DepthChip({ stat: { label, value, suffix }, className }: DepthChipProps
 }
 
 export default function Hero({ profile }: HeroProps) {
-  const { name, title, university, labRole, tagline, profileImage, stats } = profile;
+  const { name, university, badge, tagline, profileImage, stats } = profile;
   const { headlineLead, headlineHighlight } = profile;
   const [firstStat, secondStat] = stats;
   const rootRef = useRef<HTMLElement>(null);
@@ -159,7 +159,7 @@ export default function Hero({ profile }: HeroProps) {
           <p className="hero-rise">
             <span className="badge-float inline-flex items-center gap-2 rounded-full border border-accent-400/30 bg-accent-400/10 px-3.5 py-1.5 text-sm font-medium text-accent-300">
               <span aria-hidden="true" className="size-1.5 rounded-full bg-accent-400" />
-              {labRole}
+              {badge}
             </span>
           </p>
 
@@ -175,9 +175,6 @@ export default function Hero({ profile }: HeroProps) {
           <p className="hero-rise mt-8 max-w-xl text-lg leading-8 text-navy-200 [animation-delay:420ms]">
             {tagline}
           </p>
-          <p className="hero-rise mt-3 text-sm text-navy-300 [animation-delay:500ms]">
-            <span className="font-semibold text-white">{name}</span>, {title}
-          </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
             <div data-hero="cta" className="gsap-reveal">
@@ -192,12 +189,12 @@ export default function Hero({ profile }: HeroProps) {
             </div>
             <div data-hero="cta" className="gsap-reveal">
               <a
-                href="#openings"
+                href="#supervision"
                 data-magnetic
                 className="inline-flex items-center gap-2 rounded-lg border border-navy-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:border-accent-400 hover:text-accent-300"
               >
                 <Users aria-hidden="true" className="size-4" />
-                Openings for CSC &amp; Grad Students
+                Student Supervision
               </a>
             </div>
           </div>
@@ -246,13 +243,13 @@ export default function Hero({ profile }: HeroProps) {
                 {firstStat && (
                   <DepthChip
                     stat={firstStat}
-                    className="-left-6 top-10 transform-[translateZ(80px)] sm:-left-14"
+                    className="-left-6 top-10 transform-[translateZ(80px)] max-[359px]:left-0 sm:-left-14"
                   />
                 )}
                 {secondStat && (
                   <DepthChip
                     stat={secondStat}
-                    className="-right-6 top-[44%] transform-[translateZ(60px)] sm:-right-10"
+                    className="-right-6 top-[44%] transform-[translateZ(60px)] max-[359px]:right-0 sm:-right-10"
                   />
                 )}
               </div>

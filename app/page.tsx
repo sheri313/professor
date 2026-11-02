@@ -5,24 +5,22 @@ import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import Publications from "@/components/Publications";
 import ResearchInterests from "@/components/ResearchInterests";
-import Teaching from "@/components/Teaching";
-import Team from "@/components/Team";
+import Supervision from "@/components/Supervision";
 import WebGLBackground from "@/components/WebGLBackground";
 import {
-  courses,
-  footerLinks,
   navLinks,
-  professorProfile,
+  profile,
+  projects,
   publications,
-  recruitment,
   researchInterests,
-  teamMembers,
-} from "@/data/professorData";
+  researchKeywords,
+  researchOutputSummary,
+  supervision,
+} from "@/data/profile";
 
 export default function Home() {
-  const { name, title, university, labRole, headlineLead, headlineHighlight, tagline } =
-    professorProfile;
-  const { profileImage, stats } = professorProfile;
+  const { name, university, headlineLead, headlineHighlight, tagline } = profile;
+  const { profileImage, stats } = profile;
 
   return (
     <>
@@ -33,14 +31,13 @@ export default function Home() {
         Skip to content
       </a>
       <WebGLBackground />
-      <Navbar name={professorProfile.name} lab={professorProfile.labName} links={navLinks} />
+      <Navbar name={name} subtitle={profile.department} links={navLinks} />
       <main id="main" className="flex-1">
         <Hero
           profile={{
             name,
-            title,
             university,
-            labRole,
+            badge: supervision.status,
             headlineLead,
             headlineHighlight,
             tagline,
@@ -48,23 +45,17 @@ export default function Home() {
             stats,
           }}
         />
-        <About profile={professorProfile} />
-        <ResearchInterests interests={researchInterests} />
-        <Team
-          members={teamMembers}
-          recruitment={recruitment}
-          contactEmail={professorProfile.email}
-          leadName={name}
-          leadImage={profileImage}
-        />
+        <About profile={profile} projects={projects} />
+        <ResearchInterests interests={researchInterests} keywords={researchKeywords} />
+        <Supervision supervision={supervision} />
         <Publications
           publications={publications}
-          highlightAuthor={professorProfile.citationName}
+          highlightAuthors={profile.citationNames}
+          outputs={researchOutputSummary}
         />
-        <Teaching courses={courses} />
-        <Contact profile={professorProfile} />
+        <Contact profile={profile} />
       </main>
-      <Footer profile={professorProfile} links={footerLinks} />
+      <Footer profile={profile} links={navLinks} />
     </>
   );
 }

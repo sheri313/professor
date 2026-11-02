@@ -263,46 +263,6 @@ body {
   animation: full-turn 12s linear infinite;
 }
 
-/* Each ring is an empty element that spins on the compositor, carrying its nodes with
-   it. The counter layer undoes that spin, so names stay upright with no JavaScript. */
-.orbit-spin {
-  position: absolute;
-  pointer-events: none;
-  animation: full-turn var(--orbit-seconds) linear infinite var(--orbit-direction);
-}
-
-.orbit-arm {
-  position: absolute;
-  inset: 0;
-  transform: rotate(var(--orbit-angle));
-}
-
-.orbit-anchor {
-  --orbit-node: max(2.25rem, 7.5cqw);
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--orbit-node);
-  height: var(--orbit-node);
-  transform: translate(-50%, -50%) rotate(calc(var(--orbit-angle) * -1));
-}
-
-.orbit-counter {
-  animation: full-turn var(--orbit-seconds) linear infinite var(--orbit-counter-direction);
-}
-
-.orbit-stage[data-paused] :is(.orbit-spin, .orbit-counter),
-.orbit-stage:focus-within :is(.orbit-spin, .orbit-counter) {
-  animation-play-state: paused;
-}
-
-/* Hover would stick after a tap on touch screens and leave the rings frozen. */
-@media (hover: hover) {
-  .orbit-stage:hover :is(.orbit-spin, .orbit-counter) {
-    animation-play-state: paused;
-  }
-}
-
 .postcard-rays {
   background: repeating-conic-gradient(
     from 0deg at 50% 112%,
@@ -363,34 +323,6 @@ body {
     0 40px 80px -30px rgb(0 0 0 / 0.75),
     0 0 60px -14px var(--tile-glow),
     inset 0 1px 0 rgb(255 255 255 / 0.35);
-}
-
-.disclosure {
-  interpolate-size: allow-keywords;
-}
-
-.disclosure summary {
-  cursor: pointer;
-  list-style: none;
-}
-
-.disclosure summary::-webkit-details-marker {
-  display: none;
-}
-
-.disclosure::details-content {
-  height: 0;
-  opacity: 0;
-  overflow: clip;
-  transition:
-    height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.3s ease,
-    content-visibility 0.45s allow-discrete;
-}
-
-.disclosure[open]::details-content {
-  height: auto;
-  opacity: 1;
 }
 
 @keyframes hero-rise {
@@ -471,19 +403,13 @@ body {
   .hero-word,
   .badge-float,
   .aurora,
-  .portal-ring,
-  .orbit-spin,
-  .orbit-counter {
+  .portal-ring {
     animation: none;
   }
 
   .portal-glow {
     animation: none;
     opacity: 0.8;
-  }
-
-  .disclosure::details-content {
-    transition: none;
   }
 
   [data-sent] .postmark {
